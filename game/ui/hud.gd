@@ -120,6 +120,9 @@ func _update_eat_menu_highlight() -> void:
 
 func _process(_delta: float) -> void:
 	if eat_menu.visible:
+		if Input.is_action_just_pressed("p1_jump"):
+			close_eat_menu()
+			return
 		if _eat_menu_entries.is_empty():
 			if Input.is_action_just_pressed("p1_action"):
 				close_eat_menu()

@@ -24,6 +24,18 @@ func _ready() -> void:
 		if not entry.has("ingredients") or not (entry["ingredients"] is Dictionary):
 			push_warning("recipes: skipping entry '%s' with missing or invalid ingredients in %s" % [id, DATA_PATH])
 			continue
+		var bad_ingredients := false
+		for item_id in entry["ingredients"]:
+			var amount = entry["ingredients"][item_id]
+			if not (item_id is String) or not (amount is float or amount is int):
+				push_warning("recipes: skipping entry '%s' — ingredient '%s' must be a number" % [id, item_id])
+				bad_ingredients = true
+				break
+		if bad_ingredients:
+			continue
+		if not entry.has("name") or not (entry["name"] is String):
+			push_warning("recipes: entry '%s' has a missing or invalid name, using the id" % id)
+			entry["name"] = id
 		if not entry.has("color") or not (entry["color"] is String) or not Color.html_is_valid(entry["color"]):
 			push_warning("recipes: entry '%s' has a missing or invalid color, defaulting to white" % id)
 			entry["color"] = "#ffffff"
