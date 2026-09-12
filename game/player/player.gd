@@ -8,9 +8,9 @@ const Palette = preload("res://game/theme/palette.gd")
 @export var jump_velocity: float = 5.0
 @export var turn_speed: float = 10.0
 
-const IDLE_DRAIN := 0.5
-const MOVE_DRAIN := 1.0
-const JUMP_DRAIN := 3.0
+const IDLE_DRAIN := 0.1
+const MOVE_DRAIN := 0.3
+const JUMP_DRAIN := 1.0
 
 var _gravity: float = float(ProjectSettings.get_setting("physics/3d/default_gravity", 9.8))
 
