@@ -8,6 +8,10 @@ const Palette = preload("res://game/theme/palette.gd")
 @export var jump_velocity: float = 5.0
 @export var turn_speed: float = 10.0
 
+const IDLE_DRAIN := 0.5
+const MOVE_DRAIN := 1.0
+const JUMP_DRAIN := 3.0
+
 var _gravity: float = float(ProjectSettings.get_setting("physics/3d/default_gravity", 9.8))
 
 func _ready() -> void:
@@ -22,14 +26,18 @@ func _physics_process(delta: float) -> void:
 		velocity.y -= _gravity * delta
 	elif Input.is_action_just_pressed(_action("jump")):
 		velocity.y = jump_velocity
+		Game.drain(JUMP_DRAIN)
 
 	var move_direction := _get_move_direction()
 	velocity.x = move_direction.x * move_speed
 	velocity.z = move_direction.z * move_speed
 
 	if move_direction.length() > 0.01:
+		Game.drain(MOVE_DRAIN * delta)
 		var target_angle := atan2(-move_direction.x, -move_direction.z)
 		rotation.y = lerp_angle(rotation.y, target_angle, turn_speed * delta)
+	else:
+		Game.drain(IDLE_DRAIN * delta)
 
 	move_and_slide()
 
