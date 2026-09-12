@@ -1,9 +1,12 @@
 extends Node3D
 
 const Palette = preload("res://game/theme/palette.gd")
+const PickupScript = preload("res://game/pickups/pickup.gd")
+const PickupScene := preload("res://game/pickups/Pickup.tscn")
+const WaterSourceScript := preload("res://game/pickups/water_source.gd")
 
 const TILE_SIZE := 2.0
-const SKIP_CHARS := "mbruankxwdB!HS0123456789 "
+const SKIP_CHARS := "kxwdB!HS0123456789 "
 
 @export var level_path: String = "res://levels/forest_01.txt"
 @export var player_path: NodePath = NodePath("../Player1")
@@ -38,13 +41,17 @@ func _ready() -> void:
 					_spawn_tree(world_pos)
 				"~":
 					_spawn_water(world_pos)
+					_spawn_water_source(world_pos)
 				"F":
 					_spawn_campfire(world_pos)
 				"P":
 					player_spawn_found = true
 					player_spawn_pos = world_pos
 				_:
-					if not SKIP_CHARS.contains(ch):
+					var item_data := Items.get_by_map_char(ch)
+					if not item_data.is_empty():
+						_spawn_pickup(world_pos, item_data)
+					elif not SKIP_CHARS.contains(ch):
 						_spawn_unknown(world_pos, ch, row, col)
 
 	if player_spawn_found:
@@ -165,6 +172,29 @@ func _spawn_water(pos: Vector3) -> void:
 	material.albedo_color = Palette.WATER_BLUE
 	mesh_instance.material_override = material
 	add_child(mesh_instance)
+
+func _spawn_water_source(pos: Vector3) -> void:
+	var area := Area3D.new()
+	area.position = pos
+	area.set_script(WaterSourceScript)
+	add_child(area)
+
+	var shape := BoxShape3D.new()
+	shape.size = Vector3(2.0, 2.0, 2.0)
+	var collision := CollisionShape3D.new()
+	collision.shape = shape
+	collision.position = Vector3(0, 1.0, 0)
+	area.add_child(collision)
+
+func _spawn_pickup(pos: Vector3, item_data: Dictionary) -> void:
+	var pickup: PickupScript = PickupScene.instantiate()
+	pickup.item_id = item_data["id"]
+	pickup.position = pos
+	add_child(pickup)
+	var mesh_instance: MeshInstance3D = pickup.get_node("MeshInstance3D")
+	var material := StandardMaterial3D.new()
+	material.albedo_color = Color.html(item_data["color"])
+	mesh_instance.material_override = material
 
 func _spawn_campfire(pos: Vector3) -> void:
 	var mesh := CylinderMesh.new()
