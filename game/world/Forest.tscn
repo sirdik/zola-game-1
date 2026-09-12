@@ -1,8 +1,9 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://game/world/forest.gd" id="1_forest"]
 [ext_resource type="Script" path="res://game/camera/coop_camera.gd" id="2_camera"]
 [ext_resource type="PackedScene" path="res://game/player/Player.tscn" id="3_player"]
+[ext_resource type="Script" path="res://game/world/level_loader.gd" id="4_level"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMat_1"]
 sky_top_color = Color(0.5529, 0.7529, 0.9216, 1)
@@ -17,12 +18,6 @@ sky = SubResource("Sky_1")
 ambient_light_source = 2
 ambient_light_energy = 0.6
 
-[sub_resource type="BoxShape3D" id="GroundShape_1"]
-size = Vector3(100, 1, 100)
-
-[sub_resource type="BoxMesh" id="GroundMesh_1"]
-size = Vector3(100, 1, 100)
-
 [node name="Forest" type="Node3D"]
 script = ExtResource("1_forest")
 
@@ -36,15 +31,8 @@ light_color = Color(1, 0.96, 0.9, 1)
 light_energy = 1.0
 shadow_enabled = true
 
-[node name="Ground" type="StaticBody3D" parent="."]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
-position = Vector3(0, -0.5, 0)
-shape = SubResource("GroundShape_1")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
-position = Vector3(0, -0.5, 0)
-mesh = SubResource("GroundMesh_1")
+[node name="Level" type="Node3D" parent="."]
+script = ExtResource("4_level")
 
 [node name="CoopCamera" type="Node3D" parent="."]
 script = ExtResource("2_camera")
