@@ -14,10 +14,10 @@ func _ready() -> void:
 func _find_target() -> void:
 	var players := get_tree().get_nodes_in_group("players")
 	if players.size() > 0:
-		_target = players[0]
+		_target = players[0] as Node3D
 
 func _process(delta: float) -> void:
-	if _target == null:
+	if not is_instance_valid(_target):
 		_find_target()
 		return
 

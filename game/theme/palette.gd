@@ -1,4 +1,3 @@
-class_name Palette
 extends RefCounted
 
 const PASTEL_GREEN := Color(0.6588, 0.8784, 0.6275)
