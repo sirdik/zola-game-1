@@ -1,0 +1,22 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/ui/hud.gd" id="1_hud"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="ResourceBar" type="HBoxContainer" parent="."]
+position = Vector2(16, 16)
+
+[node name="EnergyBarBg" type="ColorRect" parent="."]
+position = Vector2(16, 56)
+size = Vector2(200, 20)
+color = Color(0.2, 0.2, 0.2, 0.6)
+
+[node name="EnergyBarFill" type="ColorRect" parent="EnergyBarBg"]
+size = Vector2(200, 20)
+color = Color(0.8, 0.3, 0.3, 1)
+
+[node name="EatMenu" type="VBoxContainer" parent="."]
+visible = false
+position = Vector2(16, 96)
