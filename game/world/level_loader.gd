@@ -4,6 +4,7 @@ const Palette = preload("res://game/theme/palette.gd")
 const PickupScript = preload("res://game/pickups/pickup.gd")
 const PickupScene := preload("res://game/pickups/Pickup.tscn")
 const WaterSourceScript := preload("res://game/pickups/water_source.gd")
+const CampfireScript := preload("res://game/cooking/campfire.gd")
 
 const TILE_SIZE := 2.0
 const SKIP_CHARS := "kxwdB!HS0123456789 "
@@ -197,17 +198,29 @@ func _spawn_pickup(pos: Vector3, item_data: Dictionary) -> void:
 	mesh_instance.material_override = material
 
 func _spawn_campfire(pos: Vector3) -> void:
+	var area := Area3D.new()
+	area.position = pos
+	area.set_script(CampfireScript)
+	add_child(area)
+
+	var shape := SphereShape3D.new()
+	shape.radius = 1.5
+	var collision := CollisionShape3D.new()
+	collision.shape = shape
+	collision.position = Vector3(0, 0.5, 0)
+	area.add_child(collision)
+
 	var mesh := CylinderMesh.new()
 	mesh.top_radius = 0.3
 	mesh.bottom_radius = 0.3
 	mesh.height = 0.4
 	var mesh_instance := MeshInstance3D.new()
 	mesh_instance.mesh = mesh
-	mesh_instance.position = pos + Vector3(0, 0.2, 0)
+	mesh_instance.position = Vector3(0, 0.2, 0)
 	var material := StandardMaterial3D.new()
 	material.albedo_color = Color(0.85, 0.45, 0.2)
 	mesh_instance.material_override = material
-	add_child(mesh_instance)
+	area.add_child(mesh_instance)
 
 func _spawn_unknown(pos: Vector3, ch: String, row: int, col: int) -> void:
 	push_warning("level_loader: unknown map character '%s' at row %d, col %d" % [ch, row, col])
