@@ -1,0 +1,26 @@
+; Les 1 - Ztracený plánek
+; # kámen  . tráva  T strom  ~ voda  P start  F táborák
+; m houba  b ostružina  r malina  u borůvka  a jablko  n oříšek
+; k kostička  H1 plánek domečku  S1 staveniště  ! klakson
+; x liška  w vlk  d srnka  B medvěd
+########################
+#P...F.....T..m...T....#
+#....T..b.....k...r....#
+#..T....b...T....k.....#
+#....x.......~~~.......#
+#..T.....k..~~~~~..T...#
+#....m......~~~~...u...#
+#.T....T.....~~..u.d...#
+#...k...H1......k......#
+#.....T......T.....T...#
+#..a.....S1.....n......#
+#....T........w........#
+#.T....k...T.......k...#
+#........m.......!.....#
+#..T.........T....T....#
+#.....b...k.......B....#
+########################
+
+[legend]
+H1 = blueprint  building=house
+S1 = build_site building=house

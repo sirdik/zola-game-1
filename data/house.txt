@@ -1,0 +1,21 @@
+; Domeček - g = zelené zdi, y = žluté dveře, r = červená střecha, . = nic
+[layer 0]
+ggggg
+g...g
+g...g
+ggygg
+[layer 1]
+ggggg
+g...g
+g...g
+ggggg
+[layer 2]
+rrrrr
+rrrrr
+rrrrr
+rrrrr
+[layer 3]
+.rrr.
+.rrr.
+.rrr.
+.rrr.
