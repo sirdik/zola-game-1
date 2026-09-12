@@ -15,7 +15,7 @@ func _ready() -> void:
 		return
 
 	var cols := 0
-	for line in lines:
+	for line: String in lines:
 		cols = max(cols, line.length())
 	var rows := lines.size()
 
@@ -60,7 +60,7 @@ func _read_grid_lines(path: String) -> Array[String]:
 		return lines
 	var content := file.get_as_text()
 	file.close()
-	for raw_line in content.split("\n"):
+	for raw_line: String in content.split("\n"):
 		var line: String = raw_line.replace("\r", "")
 		if line.begins_with(";"):
 			continue

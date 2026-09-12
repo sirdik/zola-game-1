@@ -12,6 +12,7 @@ func _find_target() -> void:
 	var players := get_tree().get_nodes_in_group("players")
 	if players.size() > 0:
 		_target = players[0] as Node3D
+		global_position = _target.global_transform.origin
 
 func _process(delta: float) -> void:
 	if not is_instance_valid(_target):
