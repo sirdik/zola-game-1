@@ -1,0 +1,32 @@
+{
+  "recipes": [
+    {
+      "id": "mushroom_soup",
+      "name": "Houbová polévka",
+      "ingredients": { "mushroom": 3, "water": 1 },
+      "energy_cooked": 40,
+      "color": "#E8C874"
+    },
+    {
+      "id": "forest_jam",
+      "name": "Lesní marmeláda",
+      "ingredients": { "raspberry": 3, "blackberry": 3 },
+      "energy_cooked": 25,
+      "color": "#8B2F5E"
+    },
+    {
+      "id": "blueberry_pie",
+      "name": "Borůvkový koláč",
+      "ingredients": { "blueberry": 5, "hazelnut": 2 },
+      "energy_cooked": 40,
+      "color": "#5B4A8A"
+    },
+    {
+      "id": "apple_juice",
+      "name": "Jablečný džus",
+      "ingredients": { "apple": 2, "water": 1 },
+      "energy_cooked": 15,
+      "color": "#F2A93B"
+    }
+  ]
+}

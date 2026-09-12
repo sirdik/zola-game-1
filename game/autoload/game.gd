@@ -34,3 +34,13 @@ func drain(amount: float) -> void:
 func restore(amount: float) -> void:
 	energy = clamp(energy + amount, 0.0, MAX_ENERGY)
 	energy_changed.emit(energy)
+
+func try_cook(ingredients: Dictionary, energy_cooked: float) -> bool:
+	for item_id in ingredients:
+		if get_count(item_id) < int(ingredients[item_id]):
+			return false
+	for item_id in ingredients:
+		_inventory[item_id] = get_count(item_id) - int(ingredients[item_id])
+		inventory_changed.emit(item_id)
+	restore(energy_cooked)
+	return true
