@@ -38,9 +38,9 @@ script = ExtResource("4_level")
 script = ExtResource("2_camera")
 
 [node name="SpringArm3D" type="SpringArm3D" parent="CoopCamera"]
-position = Vector3(0, 1.6, 0)
-rotation_degrees = Vector3(-20, 0, 0)
-spring_length = 4.0
+position = Vector3(0, 5.0, 0)
+rotation_degrees = Vector3(-50, 0, 0)
+spring_length = 7.0
 
 [node name="Camera3D" type="Camera3D" parent="CoopCamera/SpringArm3D"]
 current = true
