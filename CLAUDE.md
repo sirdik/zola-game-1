@@ -139,37 +139,7 @@ Nová surovina, recept, zvíře nebo stavba = nový záznam v datech, ne nový k
 Když nápad dětí potřebuje nový *druh* věci (např. loďka), přidej znovupoužitelnou
 funkci do enginu a dál ji používej z dat.
 
-## Formát mapy (`levels/*.txt`)
-
-Jeden znak = jedna dlaždice (2 × 2 m). Řádky začínající `;` jsou komentář.
-
-```
-; # kámen/zeď  . tráva  T strom  ~ voda  P start hráčů  F táborák
-; m houba  b ostružina  r malina  u borůvka  a jablko  n oříšek
-; k kostička  H plánek (viz legend)  ! klakson
-; x liška  w vlk  d srnka  B medvěd  S staveniště (viz legend)
-
-[legend]
-H1 = blueprint  building=house
-S1 = build_site building=house
-```
-
-Neznámé znaky: přátelské varování v logu a otazníkový blok, nikdy pád hry.
-Děti si budou vymýšlet písmena. Mapa může být velká (např. 40 × 40).
-
-## Formát stavby (`data/buildings/*.json` nebo textové vrstvy)
-
-Kromě JSON podporuj zápis po vrstvách, který děti nakreslí na čtverečkovaný
-papír (jedna vrstva = jedno patro, písmeno = barva kostičky, `.` = nic):
-
-```
-[layer 0]
-gggg
-g..g
-gggg
-[layer 1]
-rrrr
-```
+Formát mapy je popsaný v `levels/CLAUDE.md`, formát stavby v `data/CLAUDE.md`.
 
 ## Pravidla pro Claude Code
 
