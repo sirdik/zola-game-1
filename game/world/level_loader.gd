@@ -7,7 +7,7 @@ const WaterSourceScript := preload("res://game/pickups/water_source.gd")
 const CampfireScript := preload("res://game/cooking/campfire.gd")
 
 const TILE_SIZE := 2.0
-const SKIP_CHARS := "kxwdB!HS0123456789 "
+const SKIP_CHARS := "xwdB!S0123456789 "
 
 @export var level_path: String = "res://levels/forest_01.txt"
 @export var player_path: NodePath = NodePath("../Player1")

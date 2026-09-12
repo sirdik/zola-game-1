@@ -59,7 +59,8 @@ func open_eat_menu() -> void:
 
 	var raw_ids: Array[String] = []
 	for id in Items.all_ids():
-		if Game.get_count(id) > 0:
+		var item_data := Items.get_by_id(id)
+		if Game.get_count(id) > 0 and item_data.get("edible", true):
 			raw_ids.append(id)
 
 	if not raw_ids.is_empty():

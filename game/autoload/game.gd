@@ -8,6 +8,7 @@ const MAX_ENERGY := 100.0
 var energy: float = MAX_ENERGY
 var ui_blocking: bool = false
 var _inventory: Dictionary = {}
+var _unlocked_buildings: Dictionary = {}
 
 func _ready() -> void:
 	for id in Items.all_ids():
@@ -19,6 +20,9 @@ func get_count(item_id: String) -> int:
 func add_item(item_id: String, amount: int = 1) -> void:
 	_inventory[item_id] = get_count(item_id) + amount
 	inventory_changed.emit(item_id)
+	var item_data := Items.get_by_id(item_id)
+	if item_data.has("unlocks_building"):
+		unlock_building(item_data["unlocks_building"])
 
 func try_consume(item_id: String, amount: int = 1) -> bool:
 	if get_count(item_id) < amount:
@@ -44,3 +48,9 @@ func try_cook(ingredients: Dictionary, energy_cooked: float) -> bool:
 		inventory_changed.emit(item_id)
 	restore(energy_cooked)
 	return true
+
+func unlock_building(building_id: String) -> void:
+	_unlocked_buildings[building_id] = true
+
+func is_building_unlocked(building_id: String) -> bool:
+	return _unlocked_buildings.get(building_id, false)
