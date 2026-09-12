@@ -5,9 +5,10 @@ const PickupScript = preload("res://game/pickups/pickup.gd")
 const PickupScene := preload("res://game/pickups/Pickup.tscn")
 const WaterSourceScript := preload("res://game/pickups/water_source.gd")
 const CampfireScript := preload("res://game/cooking/campfire.gd")
+const BuildSiteScript := preload("res://game/building/build_site.gd")
 
 const TILE_SIZE := 2.0
-const SKIP_CHARS := "xwdB!S0123456789 "
+const SKIP_CHARS := "xwdB!0123456789 "
 
 @export var level_path: String = "res://levels/forest_01.txt"
 @export var player_path: NodePath = NodePath("../Player1")
@@ -45,6 +46,8 @@ func _ready() -> void:
 					_spawn_water_source(world_pos)
 				"F":
 					_spawn_campfire(world_pos)
+				"S":
+					_spawn_build_site(world_pos)
 				"P":
 					player_spawn_found = true
 					player_spawn_pos = world_pos
@@ -224,6 +227,31 @@ func _spawn_campfire(pos: Vector3) -> void:
 	material.albedo_color = Color(0.85, 0.45, 0.2)
 	mesh_instance.material_override = material
 	area.add_child(mesh_instance)
+
+func _spawn_build_site(pos: Vector3) -> void:
+	var area := Area3D.new()
+	area.position = pos
+	area.set_script(BuildSiteScript)
+
+	var shape := SphereShape3D.new()
+	shape.radius = 2.0
+	var collision := CollisionShape3D.new()
+	collision.shape = shape
+	collision.position = Vector3(0, 1.0, 0)
+	area.add_child(collision)
+
+	var mesh := BoxMesh.new()
+	mesh.size = Vector3(2.0, 0.1, 2.0)
+	var mesh_instance := MeshInstance3D.new()
+	mesh_instance.name = "Marker"
+	mesh_instance.mesh = mesh
+	mesh_instance.position = Vector3(0, 0.05, 0)
+	var material := StandardMaterial3D.new()
+	material.albedo_color = Color(0.55, 0.55, 0.55)
+	mesh_instance.material_override = material
+	area.add_child(mesh_instance)
+
+	add_child(area)
 
 func _spawn_unknown(pos: Vector3, ch: String, row: int, col: int) -> void:
 	push_warning("level_loader: unknown map character '%s' at row %d, col %d" % [ch, row, col])
