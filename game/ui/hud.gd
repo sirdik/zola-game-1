@@ -7,7 +7,8 @@ const ENERGY_BAR_WIDTH := 200.0
 @onready var eat_menu: VBoxContainer = $EatMenu
 
 var _resource_labels: Dictionary = {}
-var _eat_menu_ids: Array[String] = []
+var _eat_menu_entries: Array[Dictionary] = []
+var _eat_menu_rows: Array[Label] = []
 var _eat_menu_selected: int = 0
 
 func _ready() -> void:
@@ -49,56 +50,96 @@ func set_near_campfire(value: bool) -> void:
 		close_eat_menu()
 
 func open_eat_menu() -> void:
-	_eat_menu_ids = []
-	for id in Items.all_ids():
-		if Game.get_count(id) > 0:
-			_eat_menu_ids.append(id)
+	_eat_menu_entries = []
+	_eat_menu_rows = []
 
 	for child in eat_menu.get_children():
 		eat_menu.remove_child(child)
 		child.queue_free()
 
-	if _eat_menu_ids.is_empty():
+	var raw_ids: Array[String] = []
+	for id in Items.all_ids():
+		if Game.get_count(id) > 0:
+			raw_ids.append(id)
+
+	if not raw_ids.is_empty():
+		_add_eat_menu_header("Syrové")
+		for id in raw_ids:
+			var item_data := Items.get_by_id(id)
+			var label := _add_eat_menu_row("%s x%d" % [item_data["name"], Game.get_count(id)])
+			_eat_menu_entries.append({"kind": "raw", "id": id, "craftable": true})
+			_eat_menu_rows.append(label)
+
+	var recipe_ids := Recipes.all_ids()
+	if not recipe_ids.is_empty():
+		_add_eat_menu_header("Recepty")
+		for id in recipe_ids:
+			var recipe_data := Recipes.get_by_id(id)
+			var craftable := _can_cook(recipe_data["ingredients"])
+			var label := _add_eat_menu_row(recipe_data["name"])
+			_eat_menu_entries.append({"kind": "recipe", "id": id, "craftable": craftable})
+			_eat_menu_rows.append(label)
+
+	if _eat_menu_entries.is_empty():
 		var label := Label.new()
 		label.text = "Nemáš žádné jídlo!"
 		eat_menu.add_child(label)
 	else:
 		_eat_menu_selected = 0
-		for id in _eat_menu_ids:
-			var item_data := Items.get_by_id(id)
-			var label := Label.new()
-			label.text = "%s x%d" % [item_data["name"], Game.get_count(id)]
-			eat_menu.add_child(label)
 		_update_eat_menu_highlight()
 
 	eat_menu.visible = true
 	Game.ui_blocking = true
+
+func _add_eat_menu_header(text: String) -> void:
+	var label := Label.new()
+	label.text = text
+	eat_menu.add_child(label)
+
+func _add_eat_menu_row(text: String) -> Label:
+	var label := Label.new()
+	label.text = text
+	eat_menu.add_child(label)
+	return label
+
+func _can_cook(ingredients: Dictionary) -> bool:
+	for item_id in ingredients:
+		if Game.get_count(item_id) < ingredients[item_id]:
+			return false
+	return true
 
 func close_eat_menu() -> void:
 	eat_menu.visible = false
 	Game.ui_blocking = false
 
 func _update_eat_menu_highlight() -> void:
-	for i in eat_menu.get_child_count():
-		var label: Label = eat_menu.get_child(i)
-		label.modulate = Color(1, 1, 0.4) if i == _eat_menu_selected else Color(1, 1, 1)
+	for i in _eat_menu_rows.size():
+		var entry: Dictionary = _eat_menu_entries[i]
+		var base_color: Color = Color(1, 1, 1) if entry["craftable"] else Color(0.5, 0.5, 0.5)
+		_eat_menu_rows[i].modulate = Color(1, 1, 0.4) if i == _eat_menu_selected else base_color
 
 func _process(_delta: float) -> void:
 	if eat_menu.visible:
-		if _eat_menu_ids.is_empty():
+		if _eat_menu_entries.is_empty():
 			if Input.is_action_just_pressed("p1_action"):
 				close_eat_menu()
 			return
 		if Input.is_action_just_pressed("p1_move_back"):
-			_eat_menu_selected = (_eat_menu_selected + 1) % _eat_menu_ids.size()
+			_eat_menu_selected = (_eat_menu_selected + 1) % _eat_menu_entries.size()
 			_update_eat_menu_highlight()
 		elif Input.is_action_just_pressed("p1_move_forward"):
-			_eat_menu_selected = (_eat_menu_selected - 1 + _eat_menu_ids.size()) % _eat_menu_ids.size()
+			_eat_menu_selected = (_eat_menu_selected - 1 + _eat_menu_entries.size()) % _eat_menu_entries.size()
 			_update_eat_menu_highlight()
 		elif Input.is_action_just_pressed("p1_action"):
-			var id: String = _eat_menu_ids[_eat_menu_selected]
-			if Game.try_consume(id):
-				Game.restore(Items.get_by_id(id)["energy_raw"])
-			close_eat_menu()
+			var entry: Dictionary = _eat_menu_entries[_eat_menu_selected]
+			if entry["kind"] == "raw":
+				var id: String = entry["id"]
+				if Game.try_consume(id):
+					Game.restore(Items.get_by_id(id)["energy_raw"])
+				close_eat_menu()
+			elif entry["craftable"]:
+				var recipe_data := Recipes.get_by_id(entry["id"])
+				Game.try_cook(recipe_data["ingredients"], recipe_data["energy_cooked"])
+				close_eat_menu()
 	elif _near_campfire and Input.is_action_just_pressed("p1_action"):
 		open_eat_menu()
