@@ -1,14 +1,11 @@
 class_name CoopCamera
-extends Camera3D
+extends Node3D
 
-@export var follow_distance: float = 4.0
-@export var follow_height: float = 2.5
 @export var follow_speed: float = 5.0
 
 var _target: Node3D
 
 func _ready() -> void:
-	current = true
 	call_deferred("_find_target")
 
 func _find_target() -> void:
@@ -22,12 +19,5 @@ func _process(delta: float) -> void:
 		return
 
 	var target_pos: Vector3 = _target.global_transform.origin
-	var forward: Vector3 = -_target.global_transform.basis.z
-	forward.y = 0.0
-	if forward.length() > 0.001:
-		forward = forward.normalized()
-
-	var desired_pos: Vector3 = target_pos - forward * follow_distance + Vector3.UP * follow_height
 	var t: float = clamp(follow_speed * delta, 0.0, 1.0)
-	global_position = global_position.lerp(desired_pos, t)
-	look_at(target_pos + Vector3.UP * 1.0, Vector3.UP)
+	global_position = global_position.lerp(target_pos, t)
