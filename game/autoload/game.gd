@@ -6,6 +6,7 @@ signal energy_changed(value: float)
 const MAX_ENERGY := 100.0
 
 var energy: float = MAX_ENERGY
+var ui_blocking: bool = false
 var _inventory: Dictionary = {}
 
 func _ready() -> void:

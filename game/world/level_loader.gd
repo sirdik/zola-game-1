@@ -180,6 +180,9 @@ func _spawn_water_source(pos: Vector3) -> void:
 	area.set_script(WaterSourceScript)
 	add_child(area)
 
+	var item_data := Items.get_by_map_char("~")
+	area.item_id = item_data.get("id", "water")
+
 	var shape := BoxShape3D.new()
 	shape.size = Vector3(2.0, 2.0, 2.0)
 	var collision := CollisionShape3D.new()

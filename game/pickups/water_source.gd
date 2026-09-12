@@ -2,6 +2,8 @@ extends Area3D
 
 const COLLECT_INTERVAL := 2.0
 
+@export var item_id: String = "water"
+
 var _timer: float = 0.0
 var _player_inside: bool = false
 
@@ -24,4 +26,4 @@ func _process(delta: float) -> void:
 	_timer += delta
 	if _timer >= COLLECT_INTERVAL:
 		_timer -= COLLECT_INTERVAL
-		Game.add_item("water", 1)
+		Game.add_item(item_id, 1)

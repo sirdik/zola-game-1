@@ -24,11 +24,11 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y -= _gravity * delta
-	elif Input.is_action_just_pressed(_action("jump")):
+	elif not Game.ui_blocking and Input.is_action_just_pressed(_action("jump")):
 		velocity.y = jump_velocity
 		Game.drain(JUMP_DRAIN)
 
-	var move_direction := _get_move_direction()
+	var move_direction := Vector3.ZERO if Game.ui_blocking else _get_move_direction()
 	velocity.x = move_direction.x * move_speed
 	velocity.z = move_direction.z * move_speed
 

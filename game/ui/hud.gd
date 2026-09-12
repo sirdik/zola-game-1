@@ -41,6 +41,13 @@ func _on_inventory_changed(item_id: String) -> void:
 func _on_energy_changed(value: float) -> void:
 	energy_bar_fill.size.x = ENERGY_BAR_WIDTH * (value / Game.MAX_ENERGY)
 
+var _near_campfire: bool = false
+
+func set_near_campfire(value: bool) -> void:
+	_near_campfire = value
+	if not value and eat_menu.visible:
+		close_eat_menu()
+
 func open_eat_menu() -> void:
 	_eat_menu_ids = []
 	for id in Items.all_ids():
@@ -48,6 +55,7 @@ func open_eat_menu() -> void:
 			_eat_menu_ids.append(id)
 
 	for child in eat_menu.get_children():
+		eat_menu.remove_child(child)
 		child.queue_free()
 
 	if _eat_menu_ids.is_empty():
@@ -64,26 +72,33 @@ func open_eat_menu() -> void:
 		_update_eat_menu_highlight()
 
 	eat_menu.visible = true
+	Game.ui_blocking = true
 
 func close_eat_menu() -> void:
 	eat_menu.visible = false
+	Game.ui_blocking = false
 
 func _update_eat_menu_highlight() -> void:
 	for i in eat_menu.get_child_count():
 		var label: Label = eat_menu.get_child(i)
 		label.modulate = Color(1, 1, 0.4) if i == _eat_menu_selected else Color(1, 1, 1)
 
-func _unhandled_input(event: InputEvent) -> void:
-	if not eat_menu.visible or _eat_menu_ids.is_empty():
-		return
-	if event.is_action_pressed("p1_move_back"):
-		_eat_menu_selected = (_eat_menu_selected + 1) % _eat_menu_ids.size()
-		_update_eat_menu_highlight()
-	elif event.is_action_pressed("p1_move_forward"):
-		_eat_menu_selected = (_eat_menu_selected - 1 + _eat_menu_ids.size()) % _eat_menu_ids.size()
-		_update_eat_menu_highlight()
-	elif event.is_action_pressed("p1_action"):
-		var id: String = _eat_menu_ids[_eat_menu_selected]
-		if Game.try_consume(id):
-			Game.restore(Items.get_by_id(id)["energy_raw"])
-		close_eat_menu()
+func _process(_delta: float) -> void:
+	if eat_menu.visible:
+		if _eat_menu_ids.is_empty():
+			if Input.is_action_just_pressed("p1_action"):
+				close_eat_menu()
+			return
+		if Input.is_action_just_pressed("p1_move_back"):
+			_eat_menu_selected = (_eat_menu_selected + 1) % _eat_menu_ids.size()
+			_update_eat_menu_highlight()
+		elif Input.is_action_just_pressed("p1_move_forward"):
+			_eat_menu_selected = (_eat_menu_selected - 1 + _eat_menu_ids.size()) % _eat_menu_ids.size()
+			_update_eat_menu_highlight()
+		elif Input.is_action_just_pressed("p1_action"):
+			var id: String = _eat_menu_ids[_eat_menu_selected]
+			if Game.try_consume(id):
+				Game.restore(Items.get_by_id(id)["energy_raw"])
+			close_eat_menu()
+	elif _near_campfire and Input.is_action_just_pressed("p1_action"):
+		open_eat_menu()
