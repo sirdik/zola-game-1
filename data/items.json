@@ -1,0 +1,11 @@
+{
+  "items": [
+    { "id": "mushroom", "name": "Houba", "map_char": "m", "color": "#F5F0E1", "energy_raw": 8 },
+    { "id": "blackberry", "name": "Ostružina", "map_char": "b", "color": "#3B1F4D", "energy_raw": 8 },
+    { "id": "raspberry", "name": "Malina", "map_char": "r", "color": "#C81E4B", "energy_raw": 8 },
+    { "id": "blueberry", "name": "Borůvka", "map_char": "u", "color": "#4A6FA5", "energy_raw": 8 },
+    { "id": "apple", "name": "Jablko", "map_char": "a", "color": "#D63447", "energy_raw": 8 },
+    { "id": "hazelnut", "name": "Oříšek", "map_char": "n", "color": "#8B5A2B", "energy_raw": 8 },
+    { "id": "water", "name": "Voda", "map_char": "~", "color": "#6BADD1", "energy_raw": 3 }
+  ]
+}
