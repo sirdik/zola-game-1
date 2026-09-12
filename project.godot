@@ -13,6 +13,7 @@ config_version=5
 config/name="zola-game-1"
 config/features=PackedStringArray("4.7", "Mobile")
 config/icon="res://icon.svg"
+run/main_scene="res://game/world/Forest.tscn"
 
 [display]
 
