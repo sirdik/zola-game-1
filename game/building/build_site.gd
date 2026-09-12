@@ -39,7 +39,7 @@ func _process(_delta: float) -> void:
 		material.albedo_color = UNLOCKED_COLOR
 		marker.material_override = material
 
-	if unlocked and _player_in_range and not _placing and Input.is_action_just_pressed("p1_action"):
+	if unlocked and _player_in_range and not _placing and not Game.ui_blocking and Input.is_action_just_pressed("p1_action"):
 		_place_next_block()
 
 func _place_next_block() -> void:

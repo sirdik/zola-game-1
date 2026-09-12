@@ -33,11 +33,18 @@ static func parse(path: String) -> Array[Dictionary]:
 			continue
 		for col in range(line.length()):
 			var ch: String = line[col]
+			if ch == ".":
+				continue
 			if LAYER_COLORS.has(ch):
 				blocks.append({
-					"position": Vector3(col * BLOCK_SIZE, layer_index * BLOCK_SIZE, row_index * BLOCK_SIZE),
+					"position": Vector3(col * BLOCK_SIZE, layer_index * BLOCK_SIZE + BLOCK_SIZE * 0.5, row_index * BLOCK_SIZE),
 					"color": LAYER_COLORS[ch],
 				})
+			else:
+				push_warning("building_loader: unknown block character '%s' in layer %d, row %d of %s" % [ch, layer_index, row_index, path])
 		row_index += 1
+
+	if blocks.is_empty():
+		push_warning("building_loader: no blocks found in %s (is a [layer N] header missing or misspelled?)" % path)
 
 	return blocks
