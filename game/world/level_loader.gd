@@ -229,16 +229,9 @@ func _spawn_campfire(pos: Vector3) -> void:
 	area.add_child(mesh_instance)
 
 func _spawn_build_site(pos: Vector3) -> void:
-	var area := Area3D.new()
-	area.position = pos
-	area.set_script(BuildSiteScript)
-
-	var shape := SphereShape3D.new()
-	shape.radius = 2.0
-	var collision := CollisionShape3D.new()
-	collision.shape = shape
-	collision.position = Vector3(0, 1.0, 0)
-	area.add_child(collision)
+	var site := Node3D.new()
+	site.position = pos
+	site.set_script(BuildSiteScript)
 
 	var mesh := BoxMesh.new()
 	mesh.size = Vector3(2.0, 0.1, 2.0)
@@ -249,9 +242,9 @@ func _spawn_build_site(pos: Vector3) -> void:
 	var material := StandardMaterial3D.new()
 	material.albedo_color = Color(0.55, 0.55, 0.55)
 	mesh_instance.material_override = material
-	area.add_child(mesh_instance)
+	site.add_child(mesh_instance)
 
-	add_child(area)
+	add_child(site)
 
 func _spawn_unknown(pos: Vector3, ch: String, row: int, col: int) -> void:
 	push_warning("level_loader: unknown map character '%s' at row %d, col %d" % [ch, row, col])

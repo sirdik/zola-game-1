@@ -1,10 +1,10 @@
-extends Area3D
+extends Node3D
 
 const BuildingLoader = preload("res://game/building/building_loader.gd")
 
-const ARC_HEIGHT := 1.0
-const FLY_DURATION := 0.4
-const BLOCK_DELAY := 0.15
+const ARC_HEIGHT := 2.0
+const FLY_DURATION := 0.6
+const BLOCK_DELAY := 0.25
 const UNLOCKED_COLOR := Color(0.85, 0.7, 0.4)
 
 @export var building_id: String = "house"
@@ -14,22 +14,12 @@ const UNLOCKED_COLOR := Color(0.85, 0.7, 0.4)
 
 var _blocks: Array[Dictionary] = []
 var _next_index: int = 0
-var _placing: bool = false
-var _player_in_range: bool = false
+var _draining: bool = false
 var _was_unlocked: bool = false
 
 func _ready() -> void:
 	_blocks = BuildingLoader.parse(data_path)
-	body_entered.connect(_on_body_entered)
-	body_exited.connect(_on_body_exited)
-
-func _on_body_entered(body: Node3D) -> void:
-	if body.is_in_group("players"):
-		_player_in_range = true
-
-func _on_body_exited(body: Node3D) -> void:
-	if body.is_in_group("players"):
-		_player_in_range = false
+	add_to_group("build_sites")
 
 func _process(_delta: float) -> void:
 	var unlocked := Game.is_building_unlocked(building_id)
@@ -39,16 +29,21 @@ func _process(_delta: float) -> void:
 		material.albedo_color = UNLOCKED_COLOR
 		marker.material_override = material
 
-	if unlocked and _player_in_range and not _placing and not Game.ui_blocking and Input.is_action_just_pressed("p1_action"):
-		_place_next_block()
+	if unlocked and not _draining and wants_block() and Game.get_count("block") > 0:
+		if Game.try_consume("block"):
+			_draining = true
+			_fly_block_in(global_position + Vector3(0, 2.0, 0))
 
-func _place_next_block() -> void:
-	if _next_index >= _blocks.size():
-		return
-	if not Game.try_consume("block"):
-		return
-	_placing = true
+func wants_block() -> bool:
+	return Game.is_building_unlocked(building_id) and _next_index < _blocks.size()
 
+func receive_block(from_pos: Vector3) -> bool:
+	if not wants_block():
+		return false
+	_fly_block_in(from_pos)
+	return true
+
+func _fly_block_in(start_pos: Vector3) -> void:
 	var block_data: Dictionary = _blocks[_next_index]
 	_next_index += 1
 
@@ -61,7 +56,6 @@ func _place_next_block() -> void:
 	block.material_override = material
 	add_child(block)
 
-	var start_pos: Vector3 = global_position + Vector3(0, 2.0, 0)
 	var end_pos: Vector3 = global_position + block_data["position"]
 	block.global_position = start_pos
 
@@ -69,7 +63,7 @@ func _place_next_block() -> void:
 	tween.tween_method(_fly_step.bind(block, start_pos, end_pos), 0.0, 1.0, FLY_DURATION)
 	tween.tween_callback(_land_block.bind(block, end_pos))
 	tween.tween_interval(BLOCK_DELAY)
-	tween.tween_callback(_finish_placing)
+	tween.tween_callback(_clear_draining)
 
 func _fly_step(block: MeshInstance3D, start_pos: Vector3, end_pos: Vector3, t: float) -> void:
 	var pos: Vector3 = start_pos.lerp(end_pos, t)
@@ -82,6 +76,5 @@ func _land_block(block: MeshInstance3D, end_pos: Vector3) -> void:
 	squash.tween_property(block, "scale", Vector3(1.3, 0.7, 1.3), 0.08)
 	squash.tween_property(block, "scale", Vector3.ONE, 0.12)
 
-func _finish_placing() -> void:
-	_placing = false
-	_place_next_block()
+func _clear_draining() -> void:
+	_draining = false
