@@ -11,6 +11,8 @@ func _ready() -> void:
 	env.ambient_light_color = Palette.CREAM.lerp(Palette.SKY_BLUE, 0.3)
 
 	var music_player: AudioStreamPlayer = $MusicPlayer
-	if music_player.stream is AudioStreamWAV:
-		music_player.stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
-	music_player.play()
+	if music_player.stream != null:
+		music_player.finished.connect(music_player.play)
+		music_player.play()
+	else:
+		push_warning("forest: MusicPlayer has no stream assigned")
