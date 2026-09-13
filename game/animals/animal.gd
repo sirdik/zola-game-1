@@ -48,10 +48,13 @@ var _horn_cooldown_timer: float = 0.0
 var _calm_timer: float = 0.0
 var _pet_cooldown: float = 0.0
 var _rng := RandomNumberGenerator.new()
+var _anim_player: AnimationPlayer = null
 
 func _ready() -> void:
 	_rng.randomize()
 	_spawn_position = global_position
+	_anim_player = _find_anim_player()
+	_setup_animations()
 	_enter_idle()
 
 func _physics_process(delta: float) -> void:
@@ -88,6 +91,39 @@ func _physics_process(delta: float) -> void:
 			_check_horn_use()
 
 	move_and_slide()
+
+func _find_anim_player() -> AnimationPlayer:
+	var found: Array = mesh_node.find_children("*", "AnimationPlayer", true, false)
+	if found.is_empty():
+		return null
+	return found[0]
+
+func _setup_animations() -> void:
+	if _anim_player == null:
+		return
+	for loop_name in ["Idle", "Walk"]:
+		if _anim_player.has_animation(loop_name):
+			_anim_player.get_animation(loop_name).loop_mode = Animation.LOOP_LINEAR
+	if _anim_player.has_animation("Eating"):
+		_anim_player.get_animation("Eating").loop_mode = Animation.LOOP_NONE
+	_anim_player.animation_finished.connect(_on_animation_finished)
+
+func _play_anim(anim_name: String) -> void:
+	if _anim_player == null or not _anim_player.has_animation(anim_name):
+		return
+	if _anim_player.current_animation != anim_name or not _anim_player.is_playing():
+		_anim_player.play(anim_name)
+
+func _play_state_animation() -> void:
+	match _state:
+		State.IDLE, State.LOOK:
+			_play_anim("Idle")
+		State.WANDER:
+			_play_anim("Walk")
+
+func _on_animation_finished(anim_name: String) -> void:
+	if anim_name == "Eating":
+		_play_state_animation()
 
 func _distance_to_player() -> float:
 	return global_position.distance_to(_player.global_position)
@@ -131,6 +167,7 @@ func _enter_idle() -> void:
 	_idle_timer = _rng.randf_range(IDLE_MIN_TIME, IDLE_MAX_TIME)
 	velocity.x = 0.0
 	velocity.z = 0.0
+	_play_state_animation()
 
 func _process_idle(delta: float) -> void:
 	if _check_aggro_or_notice():
@@ -147,6 +184,7 @@ func _enter_wander() -> void:
 		_rng.randf_range(-wander_radius, wander_radius)
 	)
 	nav_agent.target_position = _spawn_position + offset
+	_play_state_animation()
 
 func _process_wander(delta: float) -> void:
 	if _check_aggro_or_notice():
@@ -164,6 +202,7 @@ func _check_aggro_or_notice() -> bool:
 			return true
 	elif dist <= notice_radius:
 		_state = State.LOOK
+		_play_state_animation()
 		return true
 	return false
 
@@ -180,6 +219,7 @@ func _process_look(delta: float) -> void:
 		Game.restore(Recipes.get_by_id(PET_ENERGY_RECIPE).get("energy_cooked", PET_ENERGY_FALLBACK))
 
 func _play_pet_effect() -> void:
+	_play_anim("Eating")
 	var hop := create_tween()
 	hop.tween_property(mesh_node, "scale", HOP_SCALE, 0.1)
 	hop.tween_property(mesh_node, "scale", Vector3.ONE, 0.15)
