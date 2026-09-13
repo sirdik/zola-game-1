@@ -10,6 +10,8 @@ const HEART_COLOR := Color(0.95, 0.4, 0.55)
 const HOP_SCALE := Vector3(1.2, 0.8, 1.2)
 const CALM_TIME := 5.0
 const PET_COOLDOWN := 0.4
+const PET_ENERGY_RECIPE := "mushroom_soup"
+const PET_ENERGY_FALLBACK := 40.0
 
 var animal_id: String = ""
 var aggressive: bool = false
@@ -159,6 +161,7 @@ func _process_look(delta: float) -> void:
 	if _distance_to_player() <= pet_radius and _pet_cooldown <= 0.0 and not Game.ui_blocking and Input.is_action_just_pressed("p1_action"):
 		_play_pet_effect()
 		_pet_cooldown = PET_COOLDOWN
+		Game.restore(Recipes.get_by_id(PET_ENERGY_RECIPE).get("energy_cooked", PET_ENERGY_FALLBACK))
 
 func _play_pet_effect() -> void:
 	var hop := create_tween()

@@ -1,8 +1,8 @@
 {
   "animals": [
-    { "id": "fox", "name": "Liška", "map_char": "x", "color": "#E07A3E", "aggressive": false, "move_speed": 1.5, "wander_radius": 4.0, "notice_radius": 4.0, "pet_radius": 1.5 },
-    { "id": "wolf", "name": "Vlk", "map_char": "w", "color": "#6E6E6E", "aggressive": false, "move_speed": 1.5, "wander_radius": 4.0, "notice_radius": 4.0, "pet_radius": 1.5 },
-    { "id": "deer", "name": "Srnka", "map_char": "d", "color": "#A9754F", "aggressive": false, "move_speed": 1.8, "wander_radius": 5.0, "notice_radius": 5.0, "pet_radius": 1.5 },
-    { "id": "bear", "name": "Medvěd", "map_char": "B", "color": "#5C4028", "aggressive": true, "move_speed": 1.2, "wander_radius": 4.0, "chase_radius": 6.0, "chase_speed": 3.0, "catch_radius": 1.2, "give_up_time": 8.0, "energy_drain_on_hit": 15.0, "knockback_force": 6.0, "flee_speed": 4.0, "flee_duration": 4.0, "horn_radius": 6.0, "horn_cooldown": 3.0 }
+    { "id": "fox", "name": "Liška", "map_char": "x", "color": "#E07A3E", "shape": "fox", "aggressive": false, "move_speed": 1.5, "wander_radius": 4.0, "notice_radius": 4.0, "pet_radius": 1.5 },
+    { "id": "wolf", "name": "Vlk", "map_char": "w", "color": "#6E6E6E", "shape": "wolf", "aggressive": false, "move_speed": 1.5, "wander_radius": 4.0, "notice_radius": 4.0, "pet_radius": 1.5 },
+    { "id": "deer", "name": "Srnka", "map_char": "d", "color": "#A9754F", "shape": "deer", "aggressive": false, "move_speed": 1.8, "wander_radius": 5.0, "notice_radius": 5.0, "pet_radius": 1.5 },
+    { "id": "bear", "name": "Medvěd", "map_char": "B", "color": "#5C4028", "shape": "bear", "aggressive": true, "move_speed": 1.2, "wander_radius": 4.0, "chase_radius": 6.0, "chase_speed": 3.0, "catch_radius": 1.2, "give_up_time": 8.0, "energy_drain_on_hit": 15.0, "knockback_force": 6.0, "flee_speed": 4.0, "flee_duration": 4.0, "horn_radius": 6.0, "horn_cooldown": 3.0 }
   ]
 }

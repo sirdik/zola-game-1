@@ -286,10 +286,13 @@ func _spawn_animal(pos: Vector3, animal_data: Dictionary) -> void:
 	mesh_instance.name = "Mesh"
 	mesh_instance.mesh = mesh
 	mesh_instance.position = Vector3(0, 0.6, 0)
+	var color := Color.html(animal_data["color"])
 	var material := StandardMaterial3D.new()
-	material.albedo_color = Color.html(animal_data["color"])
+	material.albedo_color = color
 	mesh_instance.material_override = material
 	animal.add_child(mesh_instance)
+
+	_add_animal_features(animal, animal_data.get("shape", "generic"), color)
 
 	var nav_agent := NavigationAgent3D.new()
 	nav_agent.name = "NavigationAgent3D"
@@ -313,6 +316,80 @@ func _spawn_animal(pos: Vector3, animal_data: Dictionary) -> void:
 	animal.horn_cooldown = animal_data.get("horn_cooldown", 3.0)
 
 	add_child(animal)
+
+func _add_animal_features(animal: CharacterBody3D, shape_name: String, color: Color) -> void:
+	var material := StandardMaterial3D.new()
+	material.albedo_color = color
+
+	var head_radius := 0.32 if shape_name == "bear" else 0.24
+	var head_mesh := SphereMesh.new()
+	head_mesh.radius = head_radius
+	head_mesh.height = head_radius * 2.0
+	var head := MeshInstance3D.new()
+	head.mesh = head_mesh
+	head.position = Vector3(0, 1.0, -0.35)
+	head.material_override = material
+	animal.add_child(head)
+
+	match shape_name:
+		"fox":
+			_add_cone_ears(animal, material, 0.08, 0.16)
+			_add_tail(animal, material)
+		"wolf":
+			_add_cone_ears(animal, material, 0.09, 0.2)
+		"deer":
+			_add_cone_ears(animal, material, 0.06, 0.14)
+			_add_antlers(animal, material)
+		"bear":
+			_add_round_ears(animal, material)
+
+func _add_cone_ears(animal: CharacterBody3D, material: StandardMaterial3D, radius: float, height: float) -> void:
+	for side in [-1.0, 1.0]:
+		var ear_mesh := CylinderMesh.new()
+		ear_mesh.top_radius = 0.0
+		ear_mesh.bottom_radius = radius
+		ear_mesh.height = height
+		var ear := MeshInstance3D.new()
+		ear.mesh = ear_mesh
+		ear.position = Vector3(side * 0.13, 1.22, -0.35)
+		ear.material_override = material
+		animal.add_child(ear)
+
+func _add_round_ears(animal: CharacterBody3D, material: StandardMaterial3D) -> void:
+	for side in [-1.0, 1.0]:
+		var ear_mesh := SphereMesh.new()
+		ear_mesh.radius = 0.1
+		ear_mesh.height = 0.2
+		var ear := MeshInstance3D.new()
+		ear.mesh = ear_mesh
+		ear.position = Vector3(side * 0.22, 1.18, -0.3)
+		ear.material_override = material
+		animal.add_child(ear)
+
+func _add_tail(animal: CharacterBody3D, material: StandardMaterial3D) -> void:
+	var tail_mesh := CylinderMesh.new()
+	tail_mesh.top_radius = 0.04
+	tail_mesh.bottom_radius = 0.14
+	tail_mesh.height = 0.5
+	var tail := MeshInstance3D.new()
+	tail.mesh = tail_mesh
+	tail.position = Vector3(0, 0.75, 0.55)
+	tail.rotation = Vector3(deg_to_rad(-55.0), 0.0, 0.0)
+	tail.material_override = material
+	animal.add_child(tail)
+
+func _add_antlers(animal: CharacterBody3D, material: StandardMaterial3D) -> void:
+	for side in [-1.0, 1.0]:
+		var antler_mesh := CylinderMesh.new()
+		antler_mesh.top_radius = 0.0
+		antler_mesh.bottom_radius = 0.04
+		antler_mesh.height = 0.35
+		var antler := MeshInstance3D.new()
+		antler.mesh = antler_mesh
+		antler.position = Vector3(side * 0.15, 1.3, -0.35)
+		antler.rotation = Vector3(0.0, 0.0, deg_to_rad(side * -20.0))
+		antler.material_override = material
+		animal.add_child(antler)
 
 func _spawn_unknown(pos: Vector3, ch: String, row: int, col: int) -> void:
 	push_warning("level_loader: unknown map character '%s' at row %d, col %d" % [ch, row, col])
