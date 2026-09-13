@@ -220,9 +220,10 @@ func _process_look(delta: float) -> void:
 
 func _play_pet_effect() -> void:
 	_play_anim("Eating")
+	var base_scale := mesh_node.scale
 	var hop := create_tween()
-	hop.tween_property(mesh_node, "scale", HOP_SCALE, 0.1)
-	hop.tween_property(mesh_node, "scale", Vector3.ONE, 0.15)
+	hop.tween_property(mesh_node, "scale", base_scale * HOP_SCALE, 0.1)
+	hop.tween_property(mesh_node, "scale", base_scale, 0.15)
 
 	var heart := MeshInstance3D.new()
 	var heart_mesh := SphereMesh.new()

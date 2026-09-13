@@ -13,10 +13,10 @@ const TILE_SIZE := 2.0
 const SKIP_CHARS := "0123456789 "
 
 const ROCK_MODELS: Array[Dictionary] = [
-	{"path": "res://assets/models/nature/rock_smallA.glb", "scale": 2.2},
-	{"path": "res://assets/models/nature/rock_smallD.glb", "scale": 2.2},
-	{"path": "res://assets/models/nature/rock_largeA.glb", "scale": 1.6},
-	{"path": "res://assets/models/nature/rock_largeD.glb", "scale": 1.6},
+	{"path": "res://assets/models/nature/rock_smallA.glb", "scale": 3.2},
+	{"path": "res://assets/models/nature/rock_smallD.glb", "scale": 3.2},
+	{"path": "res://assets/models/nature/rock_largeA.glb", "scale": 2.0},
+	{"path": "res://assets/models/nature/rock_largeD.glb", "scale": 2.0},
 ]
 
 const TREE_MODELS: Array[Dictionary] = [
@@ -330,7 +330,8 @@ func _spawn_animal(pos: Vector3, animal_data: Dictionary) -> void:
 		var model_scene: PackedScene = load(model_path)
 		var model: Node3D = model_scene.instantiate()
 		model.name = "Mesh"
-		model.position = Vector3(0, 0.6, 0)
+		model.position = Vector3.ZERO
+		model.rotation.y = PI
 		model.scale = Vector3.ONE * float(animal_data.get("model_scale", 1.0))
 		animal.add_child(model)
 	else:
