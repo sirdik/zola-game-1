@@ -13,7 +13,7 @@ const TILE_SIZE := 2.0
 const SKIP_CHARS := "0123456789 "
 
 @export var level_path: String = "res://levels/forest_01.txt"
-@export var player_path: NodePath = NodePath("../Player1")
+@export var player_paths: Array[NodePath] = [NodePath("../Player1"), NodePath("../Player2")]
 
 func _ready() -> void:
 	var lines := _read_grid_lines(level_path)
@@ -65,9 +65,10 @@ func _ready() -> void:
 							_spawn_unknown(world_pos, ch, row, col)
 
 	if player_spawn_found:
-		var player := get_node_or_null(player_path)
-		if player is Node3D:
-			player.global_position = player_spawn_pos + Vector3(0, 0.05, 0)
+		for i in player_paths.size():
+			var player := get_node_or_null(player_paths[i])
+			if player is Node3D:
+				player.global_position = player_spawn_pos + Vector3(0, 0.05, 0) + Vector3(i * 1.0, 0.0, 0.0)
 
 	var nav_region := NavigationRegion3D.new()
 	add_child(nav_region)
