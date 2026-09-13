@@ -42,7 +42,6 @@ var _rng := RandomNumberGenerator.new()
 func _ready() -> void:
 	_rng.randomize()
 	_spawn_position = global_position
-	_player = get_tree().get_first_node_in_group("players")
 	_enter_idle()
 
 func _physics_process(delta: float) -> void:
@@ -55,6 +54,9 @@ func _physics_process(delta: float) -> void:
 		_hit_cooldown -= delta
 	if _horn_cooldown_timer > 0.0:
 		_horn_cooldown_timer -= delta
+
+	if _player == null:
+		_player = get_tree().get_first_node_in_group("players")
 
 	if _player != null:
 		match _state:
