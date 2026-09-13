@@ -111,6 +111,7 @@ func reset_save() -> void:
 		DirAccess.remove_absolute(SAVE_PATH)
 	if FileAccess.file_exists(MAP_PATH):
 		DirAccess.remove_absolute(MAP_PATH)
+	_ensure_map_exists()
 	energy_changed.emit(energy)
 	for id in _inventory.keys():
 		inventory_changed.emit(id)

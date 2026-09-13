@@ -11,6 +11,7 @@ const BUILDING_MIN_DIST := 12
 const BLUEPRINT_MIN_DIST := 5
 const BLUEPRINT_MAX_DIST := 15
 const ANIMAL_MIN_DIST_FROM_SPAWN := 10
+const HORN_MIN_DIST_FROM_SPAWN := 10
 const PLACEMENT_RETRIES := 50
 const MAX_FULL_RETRIES := 20
 
@@ -27,6 +28,7 @@ const CAMPFIRE := "F"
 const BLUEPRINT := "H"
 const BUILD_SITE := "S"
 const BLOCK := "k"
+const HORN := "!"
 
 static func generate() -> String:
 	var density := TREE_ROCK_DENSITY
@@ -42,6 +44,7 @@ static func generate() -> String:
 
 static func _try_generate(tree_rock_density: float) -> String:
 	var grid := _make_empty_grid()
+	_add_border(grid)
 
 	var spawn := _pick_spawn_tile()
 	grid[spawn.y][spawn.x] = PLAYER_SPAWN
@@ -76,6 +79,12 @@ static func _try_generate(tree_rock_density: float) -> String:
 		legend_lines.append("%s%s = build_site building=%s" % [BUILD_SITE, token_digit, building_id])
 		legend_lines.append("%s%s = blueprint  building=%s" % [BLUEPRINT, token_digit, building_id])
 
+	var horn_pos := _pick_tile_near(spawn, HORN_MIN_DIST_FROM_SPAWN, MAP_SIZE, grid)
+	if horn_pos == Vector2i(-1, -1):
+		return ""
+	grid[horn_pos.y][horn_pos.x] = HORN
+	required_reachable.append(horn_pos)
+
 	_carve_water(grid)
 	_scatter_trees_and_rocks(grid, tree_rock_density)
 	_scatter_food(grid)
@@ -95,6 +104,13 @@ static func _make_empty_grid() -> Array[PackedStringArray]:
 		cells.fill(EMPTY)
 		grid.append(cells)
 	return grid
+
+static func _add_border(grid: Array[PackedStringArray]) -> void:
+	for i in MAP_SIZE:
+		grid[0][i] = ROCK
+		grid[MAP_SIZE - 1][i] = ROCK
+		grid[i][0] = ROCK
+		grid[i][MAP_SIZE - 1] = ROCK
 
 static func _tile_free(grid: Array[PackedStringArray], pos: Vector2i) -> bool:
 	if pos.x < 0 or pos.x >= MAP_SIZE or pos.y < 0 or pos.y >= MAP_SIZE:
@@ -149,9 +165,9 @@ static func _pick_marker_far_from_all(anchors: Array[Vector2i], min_dist: int, g
 	return Vector2i(-1, -1)
 
 static func _carve_water(grid: Array[PackedStringArray]) -> void:
-	var width := randi_range(4, 8)
-	var height := randi_range(4, 10)
 	for attempt in PLACEMENT_RETRIES:
+		var width := randi_range(4, 8)
+		var height := randi_range(4, 10)
 		var origin := Vector2i(randi_range(0, MAP_SIZE - width), randi_range(0, MAP_SIZE - height))
 		var fits := true
 		for y in range(origin.y, origin.y + height):
@@ -222,6 +238,8 @@ static func _scatter_animals(grid: Array[PackedStringArray], spawn: Vector2i) ->
 			var pos := _pick_tile_near(spawn, ANIMAL_MIN_DIST_FROM_SPAWN, MAP_SIZE, grid)
 			if pos != Vector2i(-1, -1):
 				grid[pos.y][pos.x] = ch
+			else:
+				push_warning("map_generator: could not place an instance of '%s', skipping" % animal_id)
 
 static func _is_fully_connected(grid: Array[PackedStringArray], spawn: Vector2i, required: Array[Vector2i]) -> bool:
 	var visited: Dictionary = {}
@@ -237,6 +255,9 @@ static func _is_fully_connected(grid: Array[PackedStringArray], spawn: Vector2i,
 				continue
 			var ch: String = grid[next_pos.y][next_pos.x]
 			if ch == TREE or ch == ROCK or ch == WATER:
+				# Water has no collider in level_loader.gd (it's walkable in-game),
+				# but we treat it as blocking here anyway — a deliberately
+				# conservative simplification, not a bug.
 				continue
 			visited[next_pos] = true
 			queue.append(next_pos)
