@@ -1,7 +1,7 @@
 extends RefCounted
 
 const MAP_SIZE := 60
-const TREE_ROCK_DENSITY := 0.15
+const TREE_ROCK_DENSITY := 0.28
 const TREE_FRACTION := 0.6
 const FOOD_DENSITY := 0.04
 const BLOCK_COUNT := 45
