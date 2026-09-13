@@ -1,5 +1,7 @@
 extends CanvasLayer
 
+const IconGenerator := preload("res://game/theme/icon_generator.gd")
+
 const ENERGY_BAR_WIDTH := 200.0
 
 @onready var resource_bar: HBoxContainer = $ResourceBar
@@ -24,9 +26,11 @@ func _build_resource_bar() -> void:
 		var row := HBoxContainer.new()
 		resource_bar.add_child(row)
 
-		var icon := ColorRect.new()
+		var icon := TextureRect.new()
 		icon.custom_minimum_size = Vector2(20, 20)
-		icon.color = Color.html(item_data["color"])
+		icon.texture = IconGenerator.generate(item_data.get("icon", "circle"), Color.html(item_data["color"]))
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		row.add_child(icon)
 
 		var label := Label.new()

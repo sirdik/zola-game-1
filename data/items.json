@@ -1,14 +1,14 @@
 {
   "items": [
-    { "id": "mushroom", "name": "Houba", "map_char": "m", "color": "#F5F0E1", "energy_raw": 3 },
-    { "id": "blackberry", "name": "Ostružina", "map_char": "b", "color": "#3B1F4D", "energy_raw": 3 },
-    { "id": "raspberry", "name": "Malina", "map_char": "r", "color": "#C81E4B", "energy_raw": 3 },
-    { "id": "blueberry", "name": "Borůvka", "map_char": "u", "color": "#4A6FA5", "energy_raw": 3 },
-    { "id": "apple", "name": "Jablko", "map_char": "a", "color": "#D63447", "energy_raw": 3 },
-    { "id": "hazelnut", "name": "Oříšek", "map_char": "n", "color": "#8B5A2B", "energy_raw": 3 },
-    { "id": "water", "name": "Voda", "map_char": "~", "color": "#6BADD1", "energy_raw": 1 },
-    { "id": "block", "name": "Kostička", "map_char": "k", "color": "#C9A876", "energy_raw": 0, "edible": false },
-    { "id": "blueprint_house", "name": "Plánek domečku", "map_char": "H", "color": "#F5E6C8", "energy_raw": 0, "edible": false, "unlocks_building": "house" },
-    { "id": "horn", "name": "Klakson", "map_char": "!", "color": "#E8C93A", "energy_raw": 0, "edible": false }
+    { "id": "mushroom", "name": "Houba", "map_char": "m", "color": "#F5F0E1", "energy_raw": 3, "icon": "mushroom" },
+    { "id": "blackberry", "name": "Ostružina", "map_char": "b", "color": "#3B1F4D", "energy_raw": 3, "icon": "berry" },
+    { "id": "raspberry", "name": "Malina", "map_char": "r", "color": "#C81E4B", "energy_raw": 3, "icon": "berry" },
+    { "id": "blueberry", "name": "Borůvka", "map_char": "u", "color": "#4A6FA5", "energy_raw": 3, "icon": "berry" },
+    { "id": "apple", "name": "Jablko", "map_char": "a", "color": "#D63447", "energy_raw": 3, "icon": "apple" },
+    { "id": "hazelnut", "name": "Oříšek", "map_char": "n", "color": "#8B5A2B", "energy_raw": 3, "icon": "nut" },
+    { "id": "water", "name": "Voda", "map_char": "~", "color": "#6BADD1", "energy_raw": 1, "icon": "droplet" },
+    { "id": "block", "name": "Kostička", "map_char": "k", "color": "#C9A876", "energy_raw": 0, "edible": false, "icon": "cube" },
+    { "id": "blueprint_house", "name": "Plánek domečku", "map_char": "H", "color": "#F5E6C8", "energy_raw": 0, "edible": false, "unlocks_building": "house", "icon": "scroll" },
+    { "id": "horn", "name": "Klakson", "map_char": "!", "color": "#E8C93A", "energy_raw": 0, "edible": false, "icon": "horn" }
   ]
 }

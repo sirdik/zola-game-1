@@ -7,6 +7,7 @@ const WaterSourceScript := preload("res://game/pickups/water_source.gd")
 const CampfireScript := preload("res://game/cooking/campfire.gd")
 const BuildSiteScript := preload("res://game/building/build_site.gd")
 const AnimalScript := preload("res://game/animals/animal.gd")
+const IconGenerator := preload("res://game/theme/icon_generator.gd")
 
 const TILE_SIZE := 2.0
 const SKIP_CHARS := "0123456789 "
@@ -219,10 +220,8 @@ func _spawn_pickup(pos: Vector3, item_data: Dictionary) -> void:
 	pickup.item_id = item_data["id"]
 	pickup.position = pos
 	add_child(pickup)
-	var mesh_instance: MeshInstance3D = pickup.get_node("MeshInstance3D")
-	var material := StandardMaterial3D.new()
-	material.albedo_color = Color.html(item_data["color"])
-	mesh_instance.material_override = material
+	var sprite: Sprite3D = pickup.get_node("Sprite3D")
+	sprite.texture = IconGenerator.generate(item_data.get("icon", "circle"), Color.html(item_data["color"]))
 
 func _spawn_campfire(pos: Vector3) -> void:
 	var area := Area3D.new()
