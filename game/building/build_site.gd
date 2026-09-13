@@ -20,6 +20,21 @@ var _was_unlocked: bool = false
 func _ready() -> void:
 	_blocks = BuildingLoader.parse(data_path)
 	add_to_group("build_sites")
+	_next_index = min(Game.get_building_progress(building_id), _blocks.size())
+	_restore_existing_blocks()
+
+func _restore_existing_blocks() -> void:
+	for i in range(_next_index):
+		var block_data: Dictionary = _blocks[i]
+		var block := MeshInstance3D.new()
+		var mesh := BoxMesh.new()
+		mesh.size = Vector3.ONE * BuildingLoader.BLOCK_SIZE
+		block.mesh = mesh
+		var material := StandardMaterial3D.new()
+		material.albedo_color = block_data["color"]
+		block.material_override = material
+		block.position = block_data["position"]
+		add_child(block)
 
 func _process(_delta: float) -> void:
 	var unlocked := Game.is_building_unlocked(building_id)
@@ -46,6 +61,7 @@ func receive_block(from_pos: Vector3) -> bool:
 func _fly_block_in(start_pos: Vector3) -> void:
 	var block_data: Dictionary = _blocks[_next_index]
 	_next_index += 1
+	Game.set_building_progress(building_id, _next_index)
 
 	var block := MeshInstance3D.new()
 	var mesh := BoxMesh.new()
