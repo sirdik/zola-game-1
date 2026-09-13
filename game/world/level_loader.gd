@@ -30,12 +30,16 @@ const TREE_MODELS: Array[Dictionary] = [
 @export var player_paths: Array[NodePath] = [NodePath("../Player1"), NodePath("../Player2")]
 
 func _ready() -> void:
-	var lines := _read_grid_lines(level_path)
+	var effective_level_path := level_path
+	if FileAccess.file_exists(Game.MAP_PATH):
+		effective_level_path = Game.MAP_PATH
+
+	var lines := _read_grid_lines(effective_level_path)
 	if lines.is_empty():
-		push_warning("level_loader: no grid lines found in %s" % level_path)
+		push_warning("level_loader: no grid lines found in %s" % effective_level_path)
 		return
 
-	var legend := _read_legend(level_path)
+	var legend := _read_legend(effective_level_path)
 
 	var cols := 0
 	for line: String in lines:
