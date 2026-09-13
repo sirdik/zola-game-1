@@ -5,7 +5,7 @@ Jeden znak = jedna dlaždice (2 × 2 m). Řádky začínající `;` jsou koment�
 ```
 ; # kámen/zeď  . tráva  T strom  ~ voda  P start hráčů  F táborák
 ; m houba  b ostružina  r malina  u borůvka  a jablko  n oříšek
-; k kostička  H plánek (viz legend)  ! klakson
+; k kostička  H plánek (viz legend)  ! klakson  * dekorace (bez kolize)
 ; x liška  w vlk  d srnka  B medvěd  S staveniště (viz legend)
 
 [legend]

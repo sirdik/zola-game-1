@@ -4,6 +4,7 @@ const MAP_SIZE := 60
 const TREE_ROCK_DENSITY := 0.28
 const TREE_FRACTION := 0.6
 const FOOD_DENSITY := 0.04
+const DECORATION_DENSITY := 0.03
 const BLOCK_COUNT := 45
 const CAMPFIRE_MIN_DIST := 8
 const CAMPFIRE_MAX_DIST := 20
@@ -29,6 +30,7 @@ const BLUEPRINT := "H"
 const BUILD_SITE := "S"
 const BLOCK := "k"
 const HORN := "!"
+const DECORATION := "*"
 
 static func generate() -> String:
 	var density := TREE_ROCK_DENSITY
@@ -90,6 +92,7 @@ static func _try_generate(tree_rock_density: float) -> String:
 	_scatter_food(grid)
 	_scatter_blocks(grid)
 	_scatter_animals(grid, spawn)
+	_scatter_decorations(grid)
 
 	if not _is_fully_connected(grid, spawn, required_reachable):
 		return ""
@@ -240,6 +243,15 @@ static func _scatter_animals(grid: Array[PackedStringArray], spawn: Vector2i) ->
 				grid[pos.y][pos.x] = ch
 			else:
 				push_warning("map_generator: could not place an instance of '%s', skipping" % animal_id)
+
+static func _scatter_decorations(grid: Array[PackedStringArray]) -> void:
+	for row in MAP_SIZE:
+		for col in MAP_SIZE:
+			var pos := Vector2i(col, row)
+			if not _tile_free(grid, pos):
+				continue
+			if randf() < DECORATION_DENSITY:
+				grid[row][col] = DECORATION
 
 static func _is_fully_connected(grid: Array[PackedStringArray], spawn: Vector2i, required: Array[Vector2i]) -> bool:
 	var visited: Dictionary = {}

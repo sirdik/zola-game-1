@@ -26,6 +26,16 @@ const TREE_MODELS: Array[Dictionary] = [
 	{"path": "res://assets/models/nature/tree_pineTallC.glb", "scale": 1.75},
 ]
 
+const DECORATION_MODELS: Array[Dictionary] = [
+	{"path": "res://assets/models/nature/mushroom_red.glb", "scale": 1.5},
+	{"path": "res://assets/models/nature/mushroom_tan.glb", "scale": 1.5},
+	{"path": "res://assets/models/nature/flower_purpleA.glb", "scale": 1.5},
+	{"path": "res://assets/models/nature/flower_redA.glb", "scale": 1.5},
+	{"path": "res://assets/models/nature/flower_yellowA.glb", "scale": 1.5},
+	{"path": "res://assets/models/nature/plant_bushSmall.glb", "scale": 1.3},
+	{"path": "res://assets/models/nature/log.glb", "scale": 1.2},
+]
+
 @export var level_path: String = "res://levels/forest_01.txt"
 @export var player_paths: Array[NodePath] = [NodePath("../Player1"), NodePath("../Player2")]
 
@@ -68,6 +78,8 @@ func _ready() -> void:
 					_spawn_water_source(world_pos)
 				"F":
 					_spawn_campfire(world_pos)
+				"*":
+					_spawn_decoration(world_pos)
 				"S":
 					_spawn_build_site(world_pos, _lookup_building_id(line, col, "S", legend))
 				"H":
@@ -226,6 +238,12 @@ func _add_random_model(parent: Node3D, models: Array[Dictionary]) -> void:
 	instance.scale = Vector3.ONE * float(choice["scale"])
 	instance.rotation.y = randf_range(0.0, TAU)
 	parent.add_child(instance)
+
+func _spawn_decoration(pos: Vector3) -> void:
+	var holder := Node3D.new()
+	holder.position = pos
+	add_child(holder)
+	_add_random_model(holder, DECORATION_MODELS)
 
 func _spawn_water(pos: Vector3) -> void:
 	var mesh := BoxMesh.new()
