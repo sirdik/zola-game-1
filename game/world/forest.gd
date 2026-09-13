@@ -13,3 +13,4 @@ func _ready() -> void:
 	var music_player: AudioStreamPlayer = $MusicPlayer
 	if music_player.stream is AudioStreamWAV:
 		music_player.stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
+	music_player.play()
