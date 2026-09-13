@@ -13,6 +13,8 @@ const MOVE_DRAIN := 0.3
 const JUMP_DRAIN := 1.0
 
 var _gravity: float = float(ProjectSettings.get_setting("physics/3d/default_gravity", 9.8))
+var _knockback_velocity: Vector3 = Vector3.ZERO
+var _knockback_timer: float = 0.0
 
 func _ready() -> void:
 	add_to_group("players")
@@ -28,18 +30,27 @@ func _physics_process(delta: float) -> void:
 		velocity.y = jump_velocity
 		Game.drain(JUMP_DRAIN)
 
-	var move_direction := Vector3.ZERO if Game.ui_blocking else _get_move_direction()
-	velocity.x = move_direction.x * move_speed
-	velocity.z = move_direction.z * move_speed
-
-	if move_direction.length() > 0.01:
-		Game.drain(MOVE_DRAIN * delta)
-		var target_angle := atan2(-move_direction.x, -move_direction.z)
-		rotation.y = lerp_angle(rotation.y, target_angle, turn_speed * delta)
+	if _knockback_timer > 0.0:
+		_knockback_timer -= delta
+		velocity.x = _knockback_velocity.x
+		velocity.z = _knockback_velocity.z
 	else:
-		Game.drain(IDLE_DRAIN * delta)
+		var move_direction := Vector3.ZERO if Game.ui_blocking else _get_move_direction()
+		velocity.x = move_direction.x * move_speed
+		velocity.z = move_direction.z * move_speed
+
+		if move_direction.length() > 0.01:
+			Game.drain(MOVE_DRAIN * delta)
+			var target_angle := atan2(-move_direction.x, -move_direction.z)
+			rotation.y = lerp_angle(rotation.y, target_angle, turn_speed * delta)
+		else:
+			Game.drain(IDLE_DRAIN * delta)
 
 	move_and_slide()
+
+func apply_knockback(direction: Vector3, force: float, duration: float = 0.3) -> void:
+	_knockback_velocity = Vector3(direction.x, 0.0, direction.z).normalized() * force
+	_knockback_timer = duration
 
 func _get_move_direction() -> Vector3:
 	var input_dir := Vector2.ZERO
