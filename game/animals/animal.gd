@@ -13,6 +13,8 @@ const PET_COOLDOWN := 0.4
 const PET_ENERGY_RECIPE := "mushroom_soup"
 const PET_ENERGY_FALLBACK := 40.0
 
+const PlayerScript = preload("res://game/player/player.gd")
+
 var animal_id: String = ""
 var aggressive: bool = false
 var move_speed: float = 1.5
@@ -36,7 +38,7 @@ var horn_cooldown: float = 3.0
 var _gravity: float = float(ProjectSettings.get_setting("physics/3d/default_gravity", 9.8))
 var _state: State = State.IDLE
 var _spawn_position: Vector3 = Vector3.ZERO
-var _player: Node3D = null
+var _player: PlayerScript = null
 var _idle_timer: float = 0.0
 var _chase_timer: float = 0.0
 var _flee_timer: float = 0.0
@@ -66,8 +68,7 @@ func _physics_process(delta: float) -> void:
 	if _pet_cooldown > 0.0:
 		_pet_cooldown -= delta
 
-	if _player == null or not is_instance_valid(_player):
-		_player = get_tree().get_first_node_in_group("players")
+	_update_nearest_player()
 
 	if _player != null:
 		match _state:
@@ -89,6 +90,20 @@ func _physics_process(delta: float) -> void:
 
 func _distance_to_player() -> float:
 	return global_position.distance_to(_player.global_position)
+
+func _update_nearest_player() -> void:
+	var nearest: PlayerScript = null
+	var nearest_dist := INF
+	for node in get_tree().get_nodes_in_group("players"):
+		if node is PlayerScript:
+			var dist: float = global_position.distance_to(node.global_position)
+			if dist < nearest_dist:
+				nearest_dist = dist
+				nearest = node
+	_player = nearest
+
+func _player_action(action_name: String) -> String:
+	return "p%d_%s" % [_player.player_number, action_name]
 
 func _move_toward_nav_target(speed: float, delta: float) -> void:
 	var next_pos: Vector3 = nav_agent.get_next_path_position()
@@ -158,7 +173,7 @@ func _process_look(delta: float) -> void:
 	_face_position(_player.global_position, delta)
 	velocity.x = 0.0
 	velocity.z = 0.0
-	if _distance_to_player() <= pet_radius and _pet_cooldown <= 0.0 and not Game.ui_blocking and Input.is_action_just_pressed("p1_action"):
+	if _distance_to_player() <= pet_radius and _pet_cooldown <= 0.0 and not Game.ui_blocking and Input.is_action_just_pressed(_player_action("action")):
 		_play_pet_effect()
 		_pet_cooldown = PET_COOLDOWN
 		Game.restore(Recipes.get_by_id(PET_ENERGY_RECIPE).get("energy_cooked", PET_ENERGY_FALLBACK))
@@ -227,5 +242,5 @@ func _process_flee(delta: float) -> void:
 	_move_toward_nav_target(flee_speed, delta)
 
 func _check_horn_use() -> void:
-	if _distance_to_player() <= horn_radius and Game.get_count("horn") > 0 and not Game.ui_blocking and Input.is_action_just_pressed("p1_action"):
+	if _distance_to_player() <= horn_radius and Game.get_count("horn") > 0 and not Game.ui_blocking and Input.is_action_just_pressed(_player_action("action")):
 		scare(_player.global_position)
