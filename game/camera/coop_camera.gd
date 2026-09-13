@@ -3,8 +3,8 @@ extends Node3D
 
 @export var follow_speed: float = 5.0
 @export var min_spring_length: float = 7.0
-@export var max_spring_length: float = 14.0
-@export var max_player_spread: float = 15.0
+@export var max_spring_length: float = 20.0
+@export var max_player_spread: float = 24.0
 @export var zoom_speed: float = 3.0
 
 @onready var spring_arm: SpringArm3D = $SpringArm3D
