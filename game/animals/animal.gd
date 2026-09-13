@@ -14,6 +14,7 @@ const PET_ENERGY_RECIPE := "mushroom_soup"
 const PET_ENERGY_FALLBACK := 40.0
 
 const PlayerScript = preload("res://game/player/player.gd")
+const SoundGenerator = preload("res://game/audio/sound_generator.gd")
 
 var animal_id: String = ""
 var aggressive: bool = false
@@ -203,6 +204,7 @@ func _play_pet_effect() -> void:
 func _enter_chase() -> void:
 	_state = State.CHASE
 	_chase_timer = 0.0
+	SoundGenerator.play(self, "growl")
 
 func _process_chase(delta: float) -> void:
 	_chase_timer += delta
@@ -243,4 +245,5 @@ func _process_flee(delta: float) -> void:
 
 func _check_horn_use() -> void:
 	if _distance_to_player() <= horn_radius and Game.get_count("horn") > 0 and not Game.ui_blocking and Input.is_action_just_pressed(_player_action("action")):
-		scare(_player.global_position)
+		if scare(_player.global_position):
+			SoundGenerator.play(self, "honk")

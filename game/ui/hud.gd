@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 const IconGenerator := preload("res://game/theme/icon_generator.gd")
+const SoundGenerator := preload("res://game/audio/sound_generator.gd")
 
 const ENERGY_BAR_WIDTH := 200.0
 const RESET_CONFIRM_WINDOW := 3.0
@@ -199,10 +200,12 @@ func _process(delta: float) -> void:
 				var id: String = entry["id"]
 				if Game.try_consume(id):
 					Game.restore(Items.get_by_id(id)["energy_raw"])
+					SoundGenerator.play(self, "eat")
 				close_eat_menu()
 			elif entry["craftable"]:
 				var recipe_data := Recipes.get_by_id(entry["id"])
-				Game.try_cook(recipe_data["ingredients"], recipe_data["energy_cooked"])
+				if Game.try_cook(recipe_data["ingredients"], recipe_data["energy_cooked"]):
+					SoundGenerator.play(self, "eat")
 				close_eat_menu()
 	elif _any_nearby_action_pressed():
 		open_eat_menu()
