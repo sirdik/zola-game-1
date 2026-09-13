@@ -20,7 +20,7 @@ func _ready() -> void:
 	add_to_group("players")
 	var mesh_instance: MeshInstance3D = $MeshInstance3D
 	var material := StandardMaterial3D.new()
-	material.albedo_color = Palette.PEACH
+	material.albedo_color = Palette.PEACH if player_number == 1 else Palette.LAVENDER
 	mesh_instance.material_override = material
 
 func _physics_process(delta: float) -> void:
