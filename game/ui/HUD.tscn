@@ -30,3 +30,13 @@ offset_right = -16.0
 offset_bottom = 52.0
 grow_horizontal = 0
 text = "Nová hra"
+
+[node name="MusicButton" type="Button" parent="."]
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -150.0
+offset_top = 60.0
+offset_right = -16.0
+offset_bottom = 96.0
+grow_horizontal = 0
+text = "Ztlumit hudbu"

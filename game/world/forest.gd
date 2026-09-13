@@ -11,6 +11,7 @@ func _ready() -> void:
 	env.ambient_light_color = Palette.CREAM.lerp(Palette.SKY_BLUE, 0.3)
 
 	var music_player: AudioStreamPlayer = $MusicPlayer
+	music_player.add_to_group("music_player")
 	if music_player.stream != null:
 		music_player.finished.connect(music_player.play)
 		music_player.play()

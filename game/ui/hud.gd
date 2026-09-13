@@ -7,11 +7,14 @@ const ENERGY_BAR_WIDTH := 200.0
 const RESET_CONFIRM_WINDOW := 3.0
 const RESET_LABEL := "Nová hra"
 const RESET_CONFIRM_LABEL := "Fakt smazat?"
+const MUSIC_MUTE_LABEL := "Ztlumit hudbu"
+const MUSIC_UNMUTE_LABEL := "Zapnout hudbu"
 
 @onready var resource_bar: HBoxContainer = $ResourceBar
 @onready var energy_bar_fill: ColorRect = $EnergyBarBg/EnergyBarFill
 @onready var eat_menu: VBoxContainer = $EatMenu
 @onready var reset_button: Button = $ResetButton
+@onready var music_button: Button = $MusicButton
 
 var _resource_labels: Dictionary = {}
 var _eat_menu_entries: Array[Dictionary] = []
@@ -27,6 +30,7 @@ func _ready() -> void:
 	Game.energy_changed.connect(_on_energy_changed)
 	_on_energy_changed(Game.energy)
 	reset_button.pressed.connect(_on_reset_button_pressed)
+	music_button.pressed.connect(_on_music_button_pressed)
 
 func _build_resource_bar() -> void:
 	for id in Items.all_ids():
@@ -171,6 +175,13 @@ func _on_reset_button_pressed() -> void:
 	_reset_timer = RESET_CONFIRM_WINDOW
 	reset_button.text = RESET_CONFIRM_LABEL
 	reset_button.modulate = Color(1.0, 0.4, 0.4)
+
+func _on_music_button_pressed() -> void:
+	var music_player := get_tree().get_first_node_in_group("music_player") as AudioStreamPlayer
+	if music_player == null:
+		return
+	music_player.stream_paused = not music_player.stream_paused
+	music_button.text = MUSIC_UNMUTE_LABEL if music_player.stream_paused else MUSIC_MUTE_LABEL
 
 func _process(delta: float) -> void:
 	if _reset_pending:
