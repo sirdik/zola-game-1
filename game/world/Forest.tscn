@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" path="res://game/player/Player.tscn" id="3_player"]
 [ext_resource type="Script" uid="uid://5x47jn2r4eu1" path="res://game/world/level_loader.gd" id="4_level"]
 [ext_resource type="PackedScene" path="res://game/ui/HUD.tscn" id="5_hud"]
+[ext_resource type="Script" path="res://game/world/clouds.gd" id="6_clouds"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMat_1"]
 sky_top_color = Color(0.5529, 0.7529, 0.9216, 1)
@@ -18,6 +19,12 @@ background_mode = 2
 sky = SubResource("Sky_1")
 ambient_light_source = 2
 ambient_light_energy = 0.6
+fog_enabled = true
+fog_light_color = Color(0.7529, 0.851, 0.949, 1)
+fog_light_energy = 1.0
+fog_density = 0.01
+fog_depth_begin = 30.0
+fog_depth_end = 150.0
 
 [node name="Forest" type="Node3D" unique_id=2119950949]
 script = ExtResource("1_forest")
@@ -29,9 +36,13 @@ environment = SubResource("Env_1")
 transform = Transform3D(0.8660254, -0.35355338, 0.35355338, 0, 0.70710677, 0.70710677, -0.5, -0.6123724, 0.6123724, 0, 5, 0)
 light_color = Color(1, 0.96, 0.9, 1)
 shadow_enabled = true
+directional_shadow_max_distance = 150.0
 
 [node name="Level" type="Node3D" parent="." unique_id=654678102]
 script = ExtResource("4_level")
+
+[node name="Clouds" type="Node3D" parent="."]
+script = ExtResource("6_clouds")
 
 [node name="CoopCamera" type="Node3D" parent="." unique_id=1202667600]
 script = ExtResource("2_camera")
