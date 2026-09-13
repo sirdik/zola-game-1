@@ -65,7 +65,7 @@ func _fly_block_in(start_pos: Vector3) -> void:
 	tween.tween_interval(BLOCK_DELAY)
 	tween.tween_callback(_clear_draining)
 
-func _fly_step(block: MeshInstance3D, start_pos: Vector3, end_pos: Vector3, t: float) -> void:
+func _fly_step(t: float, block: MeshInstance3D, start_pos: Vector3, end_pos: Vector3) -> void:
 	var pos: Vector3 = start_pos.lerp(end_pos, t)
 	pos.y += sin(t * PI) * ARC_HEIGHT
 	block.global_position = pos
