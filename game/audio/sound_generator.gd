@@ -21,9 +21,18 @@ static func generate(kind: String) -> AudioStreamWAV:
 	stream.data = data
 	return stream
 
+static func resolve(kind: String) -> AudioStream:
+	for ext in ["ogg", "wav", "mp3"]:
+		var path := "res://assets/sounds/%s.%s" % [kind, ext]
+		if ResourceLoader.exists(path):
+			var stream: AudioStream = load(path)
+			if stream != null:
+				return stream
+	return generate(kind)
+
 static func play(at: Node, kind: String) -> void:
 	var player := AudioStreamPlayer.new()
-	player.stream = generate(kind)
+	player.stream = resolve(kind)
 	at.add_child(player)
 	player.play()
 	player.finished.connect(player.queue_free)

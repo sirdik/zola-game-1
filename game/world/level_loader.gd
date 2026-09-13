@@ -278,7 +278,7 @@ func _spawn_pickup(pos: Vector3, item_data: Dictionary) -> void:
 	pickup.position = pos
 	add_child(pickup)
 	var sprite: Sprite3D = pickup.get_node("Sprite3D")
-	sprite.texture = IconGenerator.generate(item_data.get("icon", "circle"), Color.html(item_data["color"]))
+	sprite.texture = IconGenerator.resolve(item_data)
 
 func _spawn_campfire(pos: Vector3) -> void:
 	var area := Area3D.new()

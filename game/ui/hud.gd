@@ -36,7 +36,7 @@ func _build_resource_bar() -> void:
 
 		var icon := TextureRect.new()
 		icon.custom_minimum_size = Vector2(20, 20)
-		icon.texture = IconGenerator.generate(item_data.get("icon", "circle"), Color.html(item_data["color"]))
+		icon.texture = IconGenerator.resolve(item_data)
 		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		row.add_child(icon)
@@ -79,7 +79,7 @@ func open_eat_menu() -> void:
 		_add_eat_menu_header("Syrové")
 		for id in raw_ids:
 			var item_data := Items.get_by_id(id)
-			var icon := IconGenerator.generate(item_data.get("icon", "circle"), Color.html(item_data["color"]))
+			var icon := IconGenerator.resolve(item_data)
 			var row := _add_eat_menu_row("%s x%d" % [item_data["name"], Game.get_count(id)], icon)
 			_eat_menu_entries.append({"kind": "raw", "id": id, "craftable": true})
 			_eat_menu_rows.append(row)
@@ -90,7 +90,7 @@ func open_eat_menu() -> void:
 		for id in recipe_ids:
 			var recipe_data := Recipes.get_by_id(id)
 			var craftable := _can_cook(recipe_data["ingredients"])
-			var icon := IconGenerator.generate(recipe_data.get("icon", "circle"), Color.html(recipe_data["color"]))
+			var icon := IconGenerator.resolve(recipe_data)
 			var row := _add_eat_menu_row(recipe_data["name"], icon)
 			_eat_menu_entries.append({"kind": "recipe", "id": id, "craftable": craftable})
 			_eat_menu_rows.append(row)

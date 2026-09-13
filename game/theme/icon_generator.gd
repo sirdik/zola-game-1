@@ -2,6 +2,14 @@ extends RefCounted
 
 const SIZE := 32
 
+static func resolve(data: Dictionary) -> Texture2D:
+	var image_path: String = data.get("icon_image", "")
+	if not image_path.is_empty() and ResourceLoader.exists(image_path):
+		var texture: Texture2D = load(image_path)
+		if texture != null:
+			return texture
+	return generate(data.get("icon", "circle"), Color.html(data["color"]))
+
 static func generate(icon_name: String, base_color: Color) -> ImageTexture:
 	var image := Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
 	image.fill(Color(0, 0, 0, 0))
