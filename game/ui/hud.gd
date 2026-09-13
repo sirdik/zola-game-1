@@ -123,22 +123,34 @@ func _update_eat_menu_highlight() -> void:
 		var base_color: Color = Color(1, 1, 1) if entry["craftable"] else Color(0.5, 0.5, 0.5)
 		_eat_menu_rows[i].modulate = Color(1, 1, 0.4) if i == _eat_menu_selected else base_color
 
+func _any_jump_pressed() -> bool:
+	return Input.is_action_just_pressed("p1_jump") or Input.is_action_just_pressed("p2_jump")
+
+func _any_action_pressed() -> bool:
+	return Input.is_action_just_pressed("p1_action") or Input.is_action_just_pressed("p2_action")
+
+func _any_menu_next_pressed() -> bool:
+	return Input.is_action_just_pressed("p1_move_back") or Input.is_action_just_pressed("p2_move_back")
+
+func _any_menu_prev_pressed() -> bool:
+	return Input.is_action_just_pressed("p1_move_forward") or Input.is_action_just_pressed("p2_move_forward")
+
 func _process(_delta: float) -> void:
 	if eat_menu.visible:
-		if Input.is_action_just_pressed("p1_jump"):
+		if _any_jump_pressed():
 			close_eat_menu()
 			return
 		if _eat_menu_entries.is_empty():
-			if Input.is_action_just_pressed("p1_action"):
+			if _any_action_pressed():
 				close_eat_menu()
 			return
-		if Input.is_action_just_pressed("p1_move_back"):
+		if _any_menu_next_pressed():
 			_eat_menu_selected = (_eat_menu_selected + 1) % _eat_menu_entries.size()
 			_update_eat_menu_highlight()
-		elif Input.is_action_just_pressed("p1_move_forward"):
+		elif _any_menu_prev_pressed():
 			_eat_menu_selected = (_eat_menu_selected - 1 + _eat_menu_entries.size()) % _eat_menu_entries.size()
 			_update_eat_menu_highlight()
-		elif Input.is_action_just_pressed("p1_action"):
+		elif _any_action_pressed():
 			var entry: Dictionary = _eat_menu_entries[_eat_menu_selected]
 			if entry["kind"] == "raw":
 				var id: String = entry["id"]
@@ -149,5 +161,5 @@ func _process(_delta: float) -> void:
 				var recipe_data := Recipes.get_by_id(entry["id"])
 				Game.try_cook(recipe_data["ingredients"], recipe_data["energy_cooked"])
 				close_eat_menu()
-	elif _near_campfire and Input.is_action_just_pressed("p1_action"):
+	elif _near_campfire and _any_action_pressed():
 		open_eat_menu()
