@@ -12,6 +12,20 @@ const IconGenerator := preload("res://game/theme/icon_generator.gd")
 const TILE_SIZE := 2.0
 const SKIP_CHARS := "0123456789 "
 
+const ROCK_MODELS: Array[Dictionary] = [
+	{"path": "res://assets/models/nature/rock_smallA.glb", "scale": 2.2},
+	{"path": "res://assets/models/nature/rock_smallD.glb", "scale": 2.2},
+	{"path": "res://assets/models/nature/rock_largeA.glb", "scale": 1.6},
+	{"path": "res://assets/models/nature/rock_largeD.glb", "scale": 1.6},
+]
+
+const TREE_MODELS: Array[Dictionary] = [
+	{"path": "res://assets/models/nature/tree_pineRoundA.glb", "scale": 1.9},
+	{"path": "res://assets/models/nature/tree_pineRoundC.glb", "scale": 1.9},
+	{"path": "res://assets/models/nature/tree_pineTallA.glb", "scale": 1.75},
+	{"path": "res://assets/models/nature/tree_pineTallC.glb", "scale": 1.75},
+]
+
 @export var level_path: String = "res://levels/forest_01.txt"
 @export var player_paths: Array[NodePath] = [NodePath("../Player1"), NodePath("../Player2")]
 
@@ -183,15 +197,7 @@ func _spawn_rock(pos: Vector3) -> void:
 	collision.position = Vector3(0, 1.0, 0)
 	body.add_child(collision)
 
-	var mesh := BoxMesh.new()
-	mesh.size = Vector3(2.0, 2.0, 2.0)
-	var mesh_instance := MeshInstance3D.new()
-	mesh_instance.mesh = mesh
-	mesh_instance.position = Vector3(0, 1.0, 0)
-	var material := StandardMaterial3D.new()
-	material.albedo_color = Color(0.6, 0.6, 0.62)
-	mesh_instance.material_override = material
-	body.add_child(mesh_instance)
+	_add_random_model(body, ROCK_MODELS)
 
 func _spawn_tree(pos: Vector3) -> void:
 	var body := StaticBody3D.new()
@@ -207,29 +213,15 @@ func _spawn_tree(pos: Vector3) -> void:
 	collision.position = Vector3(0, 1.0, 0)
 	body.add_child(collision)
 
-	var trunk_mesh := CylinderMesh.new()
-	trunk_mesh.top_radius = 0.3
-	trunk_mesh.bottom_radius = 0.3
-	trunk_mesh.height = 2.0
-	var trunk_instance := MeshInstance3D.new()
-	trunk_instance.mesh = trunk_mesh
-	trunk_instance.position = Vector3(0, 1.0, 0)
-	var trunk_material := StandardMaterial3D.new()
-	trunk_material.albedo_color = Color(0.55, 0.4, 0.28)
-	trunk_instance.material_override = trunk_material
-	body.add_child(trunk_instance)
+	_add_random_model(body, TREE_MODELS)
 
-	var crown_mesh := CylinderMesh.new()
-	crown_mesh.top_radius = 0.0
-	crown_mesh.bottom_radius = 1.2
-	crown_mesh.height = 2.5
-	var crown_instance := MeshInstance3D.new()
-	crown_instance.mesh = crown_mesh
-	crown_instance.position = Vector3(0, 3.0, 0)
-	var crown_material := StandardMaterial3D.new()
-	crown_material.albedo_color = Palette.PASTEL_GREEN.darkened(0.3)
-	crown_instance.material_override = crown_material
-	body.add_child(crown_instance)
+func _add_random_model(parent: Node3D, models: Array[Dictionary]) -> void:
+	var choice: Dictionary = models[randi() % models.size()]
+	var scene: PackedScene = load(choice["path"])
+	var instance: Node3D = scene.instantiate()
+	instance.scale = Vector3.ONE * float(choice["scale"])
+	instance.rotation.y = randf_range(0.0, TAU)
+	parent.add_child(instance)
 
 func _spawn_water(pos: Vector3) -> void:
 	var mesh := BoxMesh.new()
