@@ -21,6 +21,8 @@ func _ready() -> void:
 		push_warning("level_loader: no grid lines found in %s" % level_path)
 		return
 
+	var legend := _read_legend(level_path)
+
 	var cols := 0
 	for line: String in lines:
 		cols = max(cols, line.length())
@@ -49,7 +51,9 @@ func _ready() -> void:
 				"F":
 					_spawn_campfire(world_pos)
 				"S":
-					_spawn_build_site(world_pos)
+					_spawn_build_site(world_pos, _lookup_building_id(line, col, "S", legend))
+				"H":
+					_spawn_blueprint(world_pos, _lookup_building_id(line, col, "H", legend))
 				"P":
 					player_spawn_found = true
 					player_spawn_pos = world_pos
@@ -101,6 +105,44 @@ func _read_grid_lines(path: String) -> Array[String]:
 			break
 		lines.append(line)
 	return lines
+
+func _read_legend(path: String) -> Dictionary:
+	var legend: Dictionary = {}
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return legend
+	var content := file.get_as_text()
+	file.close()
+
+	var in_legend := false
+	for raw_line: String in content.split("\n"):
+		var line: String = raw_line.replace("\r", "").strip_edges()
+		if line.begins_with(";") or line == "":
+			continue
+		if line.begins_with("[legend]"):
+			in_legend = true
+			continue
+		if not in_legend:
+			continue
+		var eq_index := line.find("=")
+		if eq_index < 0:
+			continue
+		var token := line.substr(0, eq_index).strip_edges()
+		var rest := line.substr(eq_index + 1)
+		var building_index := rest.find("building=")
+		if building_index < 0:
+			continue
+		var building_id := rest.substr(building_index + "building=".length()).strip_edges()
+		legend[token] = building_id
+	return legend
+
+func _lookup_building_id(line: String, col: int, prefix: String, legend: Dictionary) -> String:
+	if col + 1 < line.length() and "0123456789".contains(line[col + 1]):
+		var token := prefix + line[col + 1]
+		if legend.has(token):
+			return legend[token]
+		push_warning("level_loader: no legend entry for '%s', defaulting to 'house'" % token)
+	return "house"
 
 func _build_ground(cols: int, rows: int) -> void:
 	var width := cols * TILE_SIZE
@@ -249,7 +291,7 @@ func _spawn_campfire(pos: Vector3) -> void:
 	mesh_instance.material_override = material
 	area.add_child(mesh_instance)
 
-func _spawn_build_site(pos: Vector3) -> void:
+func _spawn_build_site(pos: Vector3, building_id: String) -> void:
 	var site := Node3D.new()
 	site.position = pos
 	site.set_script(BuildSiteScript)
@@ -265,7 +307,17 @@ func _spawn_build_site(pos: Vector3) -> void:
 	mesh_instance.material_override = material
 	site.add_child(mesh_instance)
 
+	site.building_id = building_id
+	site.data_path = "res://data/%s.txt" % building_id
+
 	add_child(site)
+
+func _spawn_blueprint(pos: Vector3, building_id: String) -> void:
+	var item_data := Items.get_by_id("blueprint_%s" % building_id)
+	if item_data.is_empty():
+		push_warning("level_loader: no blueprint item defined for building '%s'" % building_id)
+		return
+	_spawn_pickup(pos, item_data)
 
 func _spawn_animal(pos: Vector3, animal_data: Dictionary) -> void:
 	var animal := CharacterBody3D.new()

@@ -6,6 +6,8 @@ const LAYER_COLORS := {
 	"g": Color(0.45, 0.65, 0.45),
 	"y": Color(0.9, 0.8, 0.3),
 	"r": Color(0.75, 0.35, 0.3),
+	"s": Color(0.68, 0.66, 0.62),
+	"f": Color(0.35, 0.55, 0.75),
 }
 
 static func parse(path: String) -> Array[Dictionary]:

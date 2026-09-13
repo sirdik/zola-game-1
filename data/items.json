@@ -9,6 +9,8 @@
     { "id": "water", "name": "Voda", "map_char": "~", "color": "#6BADD1", "energy_raw": 1, "icon": "droplet" },
     { "id": "block", "name": "Kostička", "map_char": "k", "color": "#C9A876", "energy_raw": 0, "edible": false, "icon": "cube" },
     { "id": "blueprint_house", "name": "Plánek domečku", "map_char": "H", "color": "#F5E6C8", "energy_raw": 0, "edible": false, "unlocks_building": "house", "icon": "scroll" },
+    { "id": "blueprint_tower", "name": "Plánek věže", "color": "#E8DCC8", "energy_raw": 0, "edible": false, "unlocks_building": "tower", "icon": "scroll" },
+    { "id": "blueprint_castle", "name": "Plánek hradu", "color": "#DCD0C0", "energy_raw": 0, "edible": false, "unlocks_building": "castle", "icon": "scroll" },
     { "id": "horn", "name": "Klakson", "map_char": "!", "color": "#E8C93A", "energy_raw": 0, "edible": false, "icon": "horn" }
   ]
 }

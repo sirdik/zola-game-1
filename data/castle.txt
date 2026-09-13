@@ -1,0 +1,19 @@
+; Hrad - s = kamenné zdi, y = brána, f = vlajka
+[layer 0]
+sssss
+s...s
+s...s
+y...s
+sssss
+[layer 1]
+sssss
+s...s
+s...s
+s...s
+sssss
+[layer 2]
+f.s.f
+.....
+.....
+.....
+s.s.s

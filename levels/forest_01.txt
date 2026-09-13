@@ -1,26 +1,30 @@
 ; Les 1 - Ztracený plánek
 ; # kámen  . tráva  T strom  ~ voda  P start  F táborák
 ; m houba  b ostružina  r malina  u borůvka  a jablko  n oříšek
-; k kostička  H1 plánek domečku  S1 staveniště  ! klakson
+; k kostička  H plánek (číslo -> viz legenda)  S staveniště (číslo -> viz legenda)  ! klakson
 ; x liška  w vlk  d srnka  B medvěd
 ########################
-#P...Fm..k.T..m...T....#
-#....T..b.....k...r.k..#
-#..T....b...T....k..k..#
-#....x.......~~~.......#
-#..T.....k..~~~~~..T...#
-#....m.k....~~~~...u...#
-#.T....T.....~~..u.dk..#
-#...k...H1......k......#
-#.....T..k...T.....T...#
-#..a.....S1.....n......#
-#....T........w........#
-#.T....k...T.......k...#
-#........m.......!..k..#
-#..T.........T....T....#
-#.....b...k.......B...r#
+#P...Fm..k.T..m...T..k.#
+#....T..b..k..k...r.k..#
+#..Tk...b...T....k..k..#
+#....x...k...~~~.......#
+#..T.k...k..~~~~~..T...#
+#....m.kS3k.~~~~...u...#
+#.T....T.k...~~..u.dk..#
+#...k...H1..k...k......#
+#...k.T..k...TH2...T...#
+#..a.....S1.k...n......#
+#....T..k......w....S2.#
+#.T....k...T..k....k...#
+#........m...k...!..k..#
+#..T....k....T.H3.T....#
+#.....b...k....k..B...r#
 ########################
 
 [legend]
 H1 = blueprint  building=house
 S1 = build_site building=house
+H2 = blueprint  building=tower
+S2 = build_site building=tower
+H3 = blueprint  building=castle
+S3 = build_site building=castle

@@ -1,0 +1,19 @@
+; Věž - s = kamenné zdi, y = dveře, f = vlajka
+[layer 0]
+sy
+ss
+[layer 1]
+ss
+ss
+[layer 2]
+ss
+ss
+[layer 3]
+ss
+ss
+[layer 4]
+ss
+ss
+[layer 5]
+f.
+..
