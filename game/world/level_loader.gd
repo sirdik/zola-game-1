@@ -6,9 +6,10 @@ const PickupScene := preload("res://game/pickups/Pickup.tscn")
 const WaterSourceScript := preload("res://game/pickups/water_source.gd")
 const CampfireScript := preload("res://game/cooking/campfire.gd")
 const BuildSiteScript := preload("res://game/building/build_site.gd")
+const AnimalScript := preload("res://game/animals/animal.gd")
 
 const TILE_SIZE := 2.0
-const SKIP_CHARS := "xwdB!0123456789 "
+const SKIP_CHARS := "0123456789 "
 
 @export var level_path: String = "res://levels/forest_01.txt"
 @export var player_path: NodePath = NodePath("../Player1")
@@ -55,13 +56,30 @@ func _ready() -> void:
 					var item_data := Items.get_by_map_char(ch)
 					if not item_data.is_empty():
 						_spawn_pickup(world_pos, item_data)
-					elif not SKIP_CHARS.contains(ch):
-						_spawn_unknown(world_pos, ch, row, col)
+					else:
+						var animal_data := Animals.get_by_map_char(ch)
+						if not animal_data.is_empty():
+							_spawn_animal(world_pos, animal_data)
+						elif not SKIP_CHARS.contains(ch):
+							_spawn_unknown(world_pos, ch, row, col)
 
 	if player_spawn_found:
 		var player := get_node_or_null(player_path)
 		if player is Node3D:
 			player.global_position = player_spawn_pos + Vector3(0, 0.05, 0)
+
+	var nav_region := NavigationRegion3D.new()
+	add_child(nav_region)
+	var nav_mesh := NavigationMesh.new()
+	nav_mesh.geometry_parsed_geometry_type = NavigationMesh.PARSED_GEOMETRY_STATIC_COLLIDERS
+	nav_mesh.geometry_source_geometry_mode = NavigationMesh.SOURCE_GEOMETRY_GROUPS_WITH_CHILDREN
+	nav_mesh.geometry_source_group_name = "nav_source"
+	nav_mesh.agent_radius = 0.5
+	nav_mesh.agent_height = 1.25
+	nav_mesh.cell_size = 0.25
+	nav_mesh.cell_height = 0.25
+	nav_region.navigation_mesh = nav_mesh
+	nav_region.bake_navigation_mesh(true)
 
 func _read_grid_lines(path: String) -> Array[String]:
 	var lines: Array[String] = []
@@ -89,6 +107,7 @@ func _build_ground(cols: int, rows: int) -> void:
 
 	var body := StaticBody3D.new()
 	add_child(body)
+	body.add_to_group("nav_source")
 
 	var shape := BoxShape3D.new()
 	shape.size = Vector3(width, 1.0, depth)
@@ -111,6 +130,7 @@ func _spawn_rock(pos: Vector3) -> void:
 	var body := StaticBody3D.new()
 	body.position = pos
 	add_child(body)
+	body.add_to_group("nav_source")
 
 	var shape := BoxShape3D.new()
 	shape.size = Vector3(2.0, 2.0, 2.0)
@@ -133,6 +153,7 @@ func _spawn_tree(pos: Vector3) -> void:
 	var body := StaticBody3D.new()
 	body.position = pos
 	add_child(body)
+	body.add_to_group("nav_source")
 
 	var trunk_shape := CylinderShape3D.new()
 	trunk_shape.radius = 0.4
@@ -245,6 +266,53 @@ func _spawn_build_site(pos: Vector3) -> void:
 	site.add_child(mesh_instance)
 
 	add_child(site)
+
+func _spawn_animal(pos: Vector3, animal_data: Dictionary) -> void:
+	var animal := CharacterBody3D.new()
+	animal.position = pos
+	animal.set_script(AnimalScript)
+
+	var shape := CapsuleShape3D.new()
+	shape.radius = 0.4
+	shape.height = 1.2
+	var collision := CollisionShape3D.new()
+	collision.shape = shape
+	collision.position = Vector3(0, 0.6, 0)
+	animal.add_child(collision)
+
+	var mesh := CapsuleMesh.new()
+	mesh.radius = 0.4
+	mesh.height = 1.2
+	var mesh_instance := MeshInstance3D.new()
+	mesh_instance.mesh = mesh
+	mesh_instance.position = Vector3(0, 0.6, 0)
+	var material := StandardMaterial3D.new()
+	material.albedo_color = Color.html(animal_data["color"])
+	mesh_instance.material_override = material
+	animal.add_child(mesh_instance)
+
+	var nav_agent := NavigationAgent3D.new()
+	nav_agent.name = "NavigationAgent3D"
+	animal.add_child(nav_agent)
+
+	animal.animal_id = animal_data["id"]
+	animal.aggressive = animal_data.get("aggressive", false)
+	animal.move_speed = animal_data.get("move_speed", 1.5)
+	animal.wander_radius = animal_data.get("wander_radius", 4.0)
+	animal.notice_radius = animal_data.get("notice_radius", 4.0)
+	animal.pet_radius = animal_data.get("pet_radius", 1.5)
+	animal.chase_radius = animal_data.get("chase_radius", 6.0)
+	animal.chase_speed = animal_data.get("chase_speed", 3.0)
+	animal.catch_radius = animal_data.get("catch_radius", 1.2)
+	animal.give_up_time = animal_data.get("give_up_time", 8.0)
+	animal.energy_drain_on_hit = animal_data.get("energy_drain_on_hit", 15.0)
+	animal.knockback_force = animal_data.get("knockback_force", 6.0)
+	animal.flee_speed = animal_data.get("flee_speed", 4.0)
+	animal.flee_duration = animal_data.get("flee_duration", 4.0)
+	animal.horn_radius = animal_data.get("horn_radius", 6.0)
+	animal.horn_cooldown = animal_data.get("horn_cooldown", 3.0)
+
+	add_child(animal)
 
 func _spawn_unknown(pos: Vector3, ch: String, row: int, col: int) -> void:
 	push_warning("level_loader: unknown map character '%s' at row %d, col %d" % [ch, row, col])
