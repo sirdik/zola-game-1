@@ -1,6 +1,8 @@
 extends Area3D
 
-var _players_in_range: int = 0
+const PlayerScript = preload("res://game/player/player.gd")
+
+var _players_in_range: Dictionary = {}
 var _hud: Node = null
 
 func _ready() -> void:
@@ -12,20 +14,23 @@ func _find_hud() -> void:
 	var huds := get_tree().get_nodes_in_group("hud")
 	if huds.size() > 0:
 		_hud = huds[0]
-		if _players_in_range > 0:
-			_hud.set_near_campfire(true)
+		_notify_hud()
 
 func _on_body_entered(body: Node3D) -> void:
-	if body.is_in_group("players"):
-		_players_in_range += 1
-		if _hud != null and _players_in_range == 1:
-			_hud.set_near_campfire(true)
+	var player := body as PlayerScript
+	if player != null:
+		_players_in_range[player.player_number] = true
+		_notify_hud()
 
 func _on_body_exited(body: Node3D) -> void:
-	if body.is_in_group("players"):
-		_players_in_range = max(0, _players_in_range - 1)
-		if _hud != null and _players_in_range == 0:
-			_hud.set_near_campfire(false)
+	var player := body as PlayerScript
+	if player != null:
+		_players_in_range.erase(player.player_number)
+		_notify_hud()
+
+func _notify_hud() -> void:
+	if _hud != null:
+		_hud.set_near_campfire(_players_in_range.keys())
 
 func _process(_delta: float) -> void:
 	if _hud == null:

@@ -19,7 +19,7 @@ func _process(delta: float) -> void:
 	global_position = global_position.lerp(midpoint, move_t)
 
 	var spread := _compute_max_spread(players, midpoint)
-	_teleport_stragglers(players, midpoint, spread)
+	_teleport_stragglers(players)
 
 	var target_spring_length: float = clamp(min_spring_length + spread * 0.5, min_spring_length, max_spring_length)
 	var zoom_t: float = clamp(zoom_speed * delta, 0.0, 1.0)
@@ -44,11 +44,25 @@ func _compute_max_spread(players: Array[Node3D], midpoint: Vector3) -> float:
 		max_dist = max(max_dist, p.global_position.distance_to(midpoint))
 	return max_dist
 
-func _teleport_stragglers(players: Array[Node3D], midpoint: Vector3, spread: float) -> void:
-	if spread <= max_player_spread or players.size() < 2:
+func _teleport_stragglers(players: Array[Node3D]) -> void:
+	if players.size() < 2:
 		return
+	var anchor := _find_anchor(players)
 	for p in players:
-		var to_player := p.global_position - midpoint
+		if p == anchor:
+			continue
+		var to_player := p.global_position - anchor.global_position
 		to_player.y = 0.0
 		if to_player.length() > max_player_spread:
-			p.global_position = midpoint + to_player.normalized() * (max_player_spread * 0.6) + Vector3(0, 0.05, 0)
+			p.global_position = anchor.global_position + to_player.normalized() * (max_player_spread * 0.6) + Vector3(0, 0.05, 0)
+
+func _find_anchor(players: Array[Node3D]) -> Node3D:
+	var midpoint := _compute_midpoint(players)
+	var anchor: Node3D = players[0]
+	var best_dist := INF
+	for p in players:
+		var dist: float = p.global_position.distance_to(midpoint)
+		if dist < best_dist:
+			best_dist = dist
+			anchor = p
+	return anchor

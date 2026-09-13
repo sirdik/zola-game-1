@@ -17,13 +17,20 @@ var _knockback_velocity: Vector3 = Vector3.ZERO
 var _knockback_timer: float = 0.0
 
 func _ready() -> void:
-	add_to_group("players")
+	if player_number == 1:
+		add_to_group("players")
 	var mesh_instance: MeshInstance3D = $MeshInstance3D
 	var material := StandardMaterial3D.new()
 	material.albedo_color = Palette.PEACH if player_number == 1 else Palette.LAVENDER
 	mesh_instance.material_override = material
 
 func _physics_process(delta: float) -> void:
+	if player_number != 1 and not is_in_group("players"):
+		if _has_own_input_pressed():
+			add_to_group("players")
+		else:
+			return
+
 	if not is_on_floor():
 		velocity.y -= _gravity * delta
 	elif not Game.ui_blocking and Input.is_action_just_pressed(_action("jump")):
@@ -47,6 +54,16 @@ func _physics_process(delta: float) -> void:
 			Game.drain(IDLE_DRAIN * delta)
 
 	move_and_slide()
+
+func _has_own_input_pressed() -> bool:
+	return (
+		Input.is_action_pressed(_action("move_forward"))
+		or Input.is_action_pressed(_action("move_back"))
+		or Input.is_action_pressed(_action("move_left"))
+		or Input.is_action_pressed(_action("move_right"))
+		or Input.is_action_pressed(_action("jump"))
+		or Input.is_action_pressed(_action("action"))
+	)
 
 func apply_knockback(direction: Vector3, force: float, duration: float = 0.3) -> void:
 	_knockback_velocity = Vector3(direction.x, 0.0, direction.z).normalized() * force

@@ -46,11 +46,11 @@ func _on_inventory_changed(item_id: String) -> void:
 func _on_energy_changed(value: float) -> void:
 	energy_bar_fill.size.x = ENERGY_BAR_WIDTH * (value / Game.MAX_ENERGY)
 
-var _near_campfire: bool = false
+var _near_campfire_players: Array = []
 
-func set_near_campfire(value: bool) -> void:
-	_near_campfire = value
-	if not value and eat_menu.visible:
+func set_near_campfire(player_numbers: Array) -> void:
+	_near_campfire_players = player_numbers
+	if _near_campfire_players.is_empty() and eat_menu.visible:
 		close_eat_menu()
 
 func open_eat_menu() -> void:
@@ -129,6 +129,12 @@ func _any_jump_pressed() -> bool:
 func _any_action_pressed() -> bool:
 	return Input.is_action_just_pressed("p1_action") or Input.is_action_just_pressed("p2_action")
 
+func _any_nearby_action_pressed() -> bool:
+	for player_number in _near_campfire_players:
+		if Input.is_action_just_pressed("p%d_action" % player_number):
+			return true
+	return false
+
 func _any_menu_next_pressed() -> bool:
 	return Input.is_action_just_pressed("p1_move_back") or Input.is_action_just_pressed("p2_move_back")
 
@@ -161,5 +167,5 @@ func _process(_delta: float) -> void:
 				var recipe_data := Recipes.get_by_id(entry["id"])
 				Game.try_cook(recipe_data["ingredients"], recipe_data["energy_cooked"])
 				close_eat_menu()
-	elif _near_campfire and _any_action_pressed():
+	elif _any_nearby_action_pressed():
 		open_eat_menu()
