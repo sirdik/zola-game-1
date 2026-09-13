@@ -331,6 +331,7 @@ func _spawn_animal(pos: Vector3, animal_data: Dictionary) -> void:
 		var model: Node3D = model_scene.instantiate()
 		model.name = "Mesh"
 		model.position = Vector3(0, 0.6, 0)
+		model.scale = Vector3.ONE * float(animal_data.get("model_scale", 1.0))
 		animal.add_child(model)
 	else:
 		var mesh := CapsuleMesh.new()
