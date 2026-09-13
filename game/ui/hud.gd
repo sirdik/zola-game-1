@@ -3,15 +3,21 @@ extends CanvasLayer
 const IconGenerator := preload("res://game/theme/icon_generator.gd")
 
 const ENERGY_BAR_WIDTH := 200.0
+const RESET_CONFIRM_WINDOW := 3.0
+const RESET_LABEL := "Nová hra"
+const RESET_CONFIRM_LABEL := "Fakt smazat?"
 
 @onready var resource_bar: HBoxContainer = $ResourceBar
 @onready var energy_bar_fill: ColorRect = $EnergyBarBg/EnergyBarFill
 @onready var eat_menu: VBoxContainer = $EatMenu
+@onready var reset_button: Button = $ResetButton
 
 var _resource_labels: Dictionary = {}
 var _eat_menu_entries: Array[Dictionary] = []
 var _eat_menu_rows: Array[Label] = []
 var _eat_menu_selected: int = 0
+var _reset_pending: bool = false
+var _reset_timer: float = 0.0
 
 func _ready() -> void:
 	add_to_group("hud")
@@ -19,6 +25,7 @@ func _ready() -> void:
 	Game.inventory_changed.connect(_on_inventory_changed)
 	Game.energy_changed.connect(_on_energy_changed)
 	_on_energy_changed(Game.energy)
+	reset_button.pressed.connect(_on_reset_button_pressed)
 
 func _build_resource_bar() -> void:
 	for id in Items.all_ids():
@@ -141,7 +148,24 @@ func _any_menu_next_pressed() -> bool:
 func _any_menu_prev_pressed() -> bool:
 	return Input.is_action_just_pressed("p1_move_forward") or Input.is_action_just_pressed("p2_move_forward")
 
-func _process(_delta: float) -> void:
+func _on_reset_button_pressed() -> void:
+	if _reset_pending:
+		Game.reset_save()
+		get_tree().reload_current_scene()
+		return
+	_reset_pending = true
+	_reset_timer = RESET_CONFIRM_WINDOW
+	reset_button.text = RESET_CONFIRM_LABEL
+	reset_button.modulate = Color(1.0, 0.4, 0.4)
+
+func _process(delta: float) -> void:
+	if _reset_pending:
+		_reset_timer -= delta
+		if _reset_timer <= 0.0:
+			_reset_pending = false
+			reset_button.text = RESET_LABEL
+			reset_button.modulate = Color.WHITE
+
 	if eat_menu.visible:
 		if _any_jump_pressed():
 			close_eat_menu()

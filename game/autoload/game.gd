@@ -84,6 +84,20 @@ func set_building_progress(building_id: String, next_index: int) -> void:
 	_building_progress[building_id] = next_index
 	_mark_dirty()
 
+func reset_save() -> void:
+	energy = MAX_ENERGY
+	for id in _inventory.keys():
+		_inventory[id] = 0
+	_unlocked_buildings.clear()
+	_building_progress.clear()
+	_dirty = false
+	_save_timer = 0.0
+	if FileAccess.file_exists(SAVE_PATH):
+		DirAccess.remove_absolute(SAVE_PATH)
+	energy_changed.emit(energy)
+	for id in _inventory.keys():
+		inventory_changed.emit(id)
+
 func _mark_dirty() -> void:
 	_dirty = true
 
