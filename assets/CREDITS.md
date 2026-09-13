@@ -25,3 +25,10 @@ model) is CC-BY, where attribution below satisfies the license.
 - License: Creative Commons Attribution (CC-BY) — attribution required,
   satisfied by this credit
 - Source: https://poly.pizza/m/0PXWfxfb0Hu
+
+## "Happy Forest!" — background music
+
+- Files: `assets/sounds/background_music.wav`
+- Author: 1khaled_khalil1 (via OpenGameArt.org), made with Bosca Ceoil
+- License: Creative Commons CC0 1.0
+- Source: https://opengameart.org/content/happy-forest

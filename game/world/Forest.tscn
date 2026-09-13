@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://5x47jn2r4eu1" path="res://game/world/level_loader.gd" id="4_level"]
 [ext_resource type="PackedScene" path="res://game/ui/HUD.tscn" id="5_hud"]
 [ext_resource type="Script" path="res://game/world/clouds.gd" id="6_clouds"]
+[ext_resource type="AudioStream" path="res://assets/sounds/background_music.wav" id="7_music"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMat_1"]
 sky_top_color = Color(0.5529, 0.7529, 0.9216, 1)
@@ -43,6 +44,11 @@ script = ExtResource("4_level")
 
 [node name="Clouds" type="Node3D" parent="."]
 script = ExtResource("6_clouds")
+
+[node name="MusicPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_music")
+volume_db = -12.0
+autoplay = true
 
 [node name="CoopCamera" type="Node3D" parent="." unique_id=1202667600]
 script = ExtResource("2_camera")
