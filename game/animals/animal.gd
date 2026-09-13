@@ -34,7 +34,7 @@ var horn_radius: float = 6.0
 var horn_cooldown: float = 3.0
 
 @onready var nav_agent: NavigationAgent3D = $NavigationAgent3D
-@onready var mesh_node: MeshInstance3D = $Mesh
+@onready var mesh_node: Node3D = $Mesh
 
 var _gravity: float = float(ProjectSettings.get_setting("physics/3d/default_gravity", 9.8))
 var _state: State = State.IDLE

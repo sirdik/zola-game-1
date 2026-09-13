@@ -332,20 +332,27 @@ func _spawn_animal(pos: Vector3, animal_data: Dictionary) -> void:
 	collision.position = Vector3(0, 0.6, 0)
 	animal.add_child(collision)
 
-	var mesh := CapsuleMesh.new()
-	mesh.radius = 0.4
-	mesh.height = 1.2
-	var mesh_instance := MeshInstance3D.new()
-	mesh_instance.name = "Mesh"
-	mesh_instance.mesh = mesh
-	mesh_instance.position = Vector3(0, 0.6, 0)
 	var color := Color.html(animal_data["color"])
-	var material := StandardMaterial3D.new()
-	material.albedo_color = color
-	mesh_instance.material_override = material
-	animal.add_child(mesh_instance)
-
-	_add_animal_features(animal, animal_data.get("shape", "generic"), color)
+	var model_path: String = animal_data.get("model_path", "")
+	if not model_path.is_empty() and ResourceLoader.exists(model_path):
+		var model_scene: PackedScene = load(model_path)
+		var model: Node3D = model_scene.instantiate()
+		model.name = "Mesh"
+		model.position = Vector3(0, 0.6, 0)
+		animal.add_child(model)
+	else:
+		var mesh := CapsuleMesh.new()
+		mesh.radius = 0.4
+		mesh.height = 1.2
+		var mesh_instance := MeshInstance3D.new()
+		mesh_instance.name = "Mesh"
+		mesh_instance.mesh = mesh
+		mesh_instance.position = Vector3(0, 0.6, 0)
+		var material := StandardMaterial3D.new()
+		material.albedo_color = color
+		mesh_instance.material_override = material
+		animal.add_child(mesh_instance)
+		_add_animal_features(animal, animal_data.get("shape", "generic"), color)
 
 	var nav_agent := NavigationAgent3D.new()
 	nav_agent.name = "NavigationAgent3D"
