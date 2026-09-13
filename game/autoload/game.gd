@@ -1,10 +1,13 @@
 extends Node
 
+const MapGenerator := preload("res://game/world/map_generator.gd")
+
 signal inventory_changed(item_id: String)
 signal energy_changed(value: float)
 
 const MAX_ENERGY := 100.0
 const SAVE_PATH := "user://savegame.json"
+const MAP_PATH := "user://generated_forest.txt"
 const SAVE_INTERVAL := 2.0
 
 var energy: float = MAX_ENERGY
@@ -18,7 +21,19 @@ var _save_timer: float = 0.0
 func _ready() -> void:
 	for id in Items.all_ids():
 		_inventory[id] = 0
+	_ensure_map_exists()
 	_load()
+
+func _ensure_map_exists() -> void:
+	if FileAccess.file_exists(MAP_PATH):
+		return
+	var map_text := MapGenerator.generate()
+	var file := FileAccess.open(MAP_PATH, FileAccess.WRITE)
+	if file == null:
+		push_warning("game: could not write generated map at %s" % MAP_PATH)
+		return
+	file.store_string(map_text)
+	file.close()
 
 func _process(delta: float) -> void:
 	if _dirty:
@@ -94,6 +109,8 @@ func reset_save() -> void:
 	_save_timer = 0.0
 	if FileAccess.file_exists(SAVE_PATH):
 		DirAccess.remove_absolute(SAVE_PATH)
+	if FileAccess.file_exists(MAP_PATH):
+		DirAccess.remove_absolute(MAP_PATH)
 	energy_changed.emit(energy)
 	for id in _inventory.keys():
 		inventory_changed.emit(id)
