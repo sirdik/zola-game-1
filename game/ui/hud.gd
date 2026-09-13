@@ -14,7 +14,7 @@ const RESET_CONFIRM_LABEL := "Fakt smazat?"
 
 var _resource_labels: Dictionary = {}
 var _eat_menu_entries: Array[Dictionary] = []
-var _eat_menu_rows: Array[Label] = []
+var _eat_menu_rows: Array[Control] = []
 var _eat_menu_selected: int = 0
 var _reset_pending: bool = false
 var _reset_timer: float = 0.0
@@ -78,9 +78,10 @@ func open_eat_menu() -> void:
 		_add_eat_menu_header("Syrové")
 		for id in raw_ids:
 			var item_data := Items.get_by_id(id)
-			var label := _add_eat_menu_row("%s x%d" % [item_data["name"], Game.get_count(id)])
+			var icon := IconGenerator.generate(item_data.get("icon", "circle"), Color.html(item_data["color"]))
+			var row := _add_eat_menu_row("%s x%d" % [item_data["name"], Game.get_count(id)], icon)
 			_eat_menu_entries.append({"kind": "raw", "id": id, "craftable": true})
-			_eat_menu_rows.append(label)
+			_eat_menu_rows.append(row)
 
 	var recipe_ids := Recipes.all_ids()
 	if not recipe_ids.is_empty():
@@ -88,9 +89,10 @@ func open_eat_menu() -> void:
 		for id in recipe_ids:
 			var recipe_data := Recipes.get_by_id(id)
 			var craftable := _can_cook(recipe_data["ingredients"])
-			var label := _add_eat_menu_row(recipe_data["name"])
+			var icon := IconGenerator.generate(recipe_data.get("icon", "circle"), Color.html(recipe_data["color"]))
+			var row := _add_eat_menu_row(recipe_data["name"], icon)
 			_eat_menu_entries.append({"kind": "recipe", "id": id, "craftable": craftable})
-			_eat_menu_rows.append(label)
+			_eat_menu_rows.append(row)
 
 	if _eat_menu_entries.is_empty():
 		var label := Label.new()
@@ -108,11 +110,22 @@ func _add_eat_menu_header(text: String) -> void:
 	label.text = text
 	eat_menu.add_child(label)
 
-func _add_eat_menu_row(text: String) -> Label:
+func _add_eat_menu_row(text: String, icon: Texture2D) -> Control:
+	var row := HBoxContainer.new()
+	eat_menu.add_child(row)
+
+	var icon_rect := TextureRect.new()
+	icon_rect.custom_minimum_size = Vector2(20, 20)
+	icon_rect.texture = icon
+	icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	row.add_child(icon_rect)
+
 	var label := Label.new()
 	label.text = text
-	eat_menu.add_child(label)
-	return label
+	row.add_child(label)
+
+	return row
 
 func _can_cook(ingredients: Dictionary) -> bool:
 	for item_id in ingredients:

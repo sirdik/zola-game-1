@@ -5,28 +5,32 @@
       "name": "Houbová polévka",
       "ingredients": { "mushroom": 3, "water": 1 },
       "energy_cooked": 40,
-      "color": "#E8C874"
+      "color": "#E8C874",
+      "icon": "soup"
     },
     {
       "id": "forest_jam",
       "name": "Lesní marmeláda",
       "ingredients": { "raspberry": 3, "blackberry": 3 },
       "energy_cooked": 25,
-      "color": "#8B2F5E"
+      "color": "#8B2F5E",
+      "icon": "jam"
     },
     {
       "id": "blueberry_pie",
       "name": "Borůvkový koláč",
       "ingredients": { "blueberry": 5, "hazelnut": 2 },
       "energy_cooked": 40,
-      "color": "#5B4A8A"
+      "color": "#5B4A8A",
+      "icon": "pie"
     },
     {
       "id": "apple_juice",
       "name": "Jablečný džus",
       "ingredients": { "apple": 2, "water": 1 },
       "energy_cooked": 15,
-      "color": "#F2A93B"
+      "color": "#F2A93B",
+      "icon": "juice"
     }
   ]
 }

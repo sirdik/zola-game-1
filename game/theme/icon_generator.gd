@@ -35,6 +35,20 @@ static func generate(icon_name: String, base_color: Color) -> ImageTexture:
 			_draw_circle(image, Vector2(10, 22), 8, base_color)
 			_draw_rect(image, 14, 8, 14, 8, base_color)
 			_draw_circle(image, Vector2(26, 10), 3, base_color)
+		"soup":
+			_draw_rect(image, 6, 16, 20, 10, base_color)
+			_draw_rect(image, 6, 14, 20, 2, base_color.darkened(0.3))
+			_draw_rect(image, 12, 4, 2, 8, Color(0.85, 0.85, 0.85))
+			_draw_rect(image, 18, 4, 2, 8, Color(0.85, 0.85, 0.85))
+		"jam":
+			_draw_rect(image, 9, 10, 14, 18, base_color)
+			_draw_rect(image, 8, 6, 16, 5, base_color.darkened(0.35))
+		"pie":
+			_draw_circle(image, Vector2(16, 17), 12, base_color.darkened(0.2))
+			_draw_circle(image, Vector2(16, 17), 8, base_color)
+		"juice":
+			_draw_rect(image, 10, 8, 12, 16, base_color)
+			_draw_rect(image, 22, 12, 4, 6, base_color)
 		_:
 			_draw_circle(image, Vector2(16, 16), 12, base_color)
 	return ImageTexture.create_from_image(image)
