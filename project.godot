@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 Items="*res://game/autoload/items.gd"
 Game="*res://game/autoload/game.gd"
 Recipes="*res://game/autoload/recipes.gd"
+Animals="*res://game/autoload/animals.gd"
 
 [display]
 
