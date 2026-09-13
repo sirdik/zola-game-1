@@ -8,6 +8,8 @@ const IDLE_MAX_TIME := 3.0
 const TURN_SPEED := 10.0
 const HEART_COLOR := Color(0.95, 0.4, 0.55)
 const HOP_SCALE := Vector3(1.2, 0.8, 1.2)
+const CALM_TIME := 5.0
+const PET_COOLDOWN := 0.4
 
 var animal_id: String = ""
 var aggressive: bool = false
@@ -27,6 +29,7 @@ var horn_radius: float = 6.0
 var horn_cooldown: float = 3.0
 
 @onready var nav_agent: NavigationAgent3D = $NavigationAgent3D
+@onready var mesh_node: MeshInstance3D = $Mesh
 
 var _gravity: float = float(ProjectSettings.get_setting("physics/3d/default_gravity", 9.8))
 var _state: State = State.IDLE
@@ -37,6 +40,8 @@ var _chase_timer: float = 0.0
 var _flee_timer: float = 0.0
 var _hit_cooldown: float = 0.0
 var _horn_cooldown_timer: float = 0.0
+var _calm_timer: float = 0.0
+var _pet_cooldown: float = 0.0
 var _rng := RandomNumberGenerator.new()
 
 func _ready() -> void:
@@ -54,8 +59,12 @@ func _physics_process(delta: float) -> void:
 		_hit_cooldown -= delta
 	if _horn_cooldown_timer > 0.0:
 		_horn_cooldown_timer -= delta
+	if _calm_timer > 0.0:
+		_calm_timer -= delta
+	if _pet_cooldown > 0.0:
+		_pet_cooldown -= delta
 
-	if _player == null:
+	if _player == null or not is_instance_valid(_player):
 		_player = get_tree().get_first_node_in_group("players")
 
 	if _player != null:
@@ -132,7 +141,7 @@ func _process_wander(delta: float) -> void:
 func _check_aggro_or_notice() -> bool:
 	var dist := _distance_to_player()
 	if aggressive:
-		if dist <= chase_radius:
+		if _calm_timer <= 0.0 and dist <= chase_radius:
 			_enter_chase()
 			return true
 	elif dist <= notice_radius:
@@ -147,13 +156,14 @@ func _process_look(delta: float) -> void:
 	_face_position(_player.global_position, delta)
 	velocity.x = 0.0
 	velocity.z = 0.0
-	if _distance_to_player() <= pet_radius and Input.is_action_just_pressed("p1_action"):
+	if _distance_to_player() <= pet_radius and _pet_cooldown <= 0.0 and not Game.ui_blocking and Input.is_action_just_pressed("p1_action"):
 		_play_pet_effect()
+		_pet_cooldown = PET_COOLDOWN
 
 func _play_pet_effect() -> void:
 	var hop := create_tween()
-	hop.tween_property(self, "scale", HOP_SCALE, 0.1)
-	hop.tween_property(self, "scale", Vector3.ONE, 0.15)
+	hop.tween_property(mesh_node, "scale", HOP_SCALE, 0.1)
+	hop.tween_property(mesh_node, "scale", Vector3.ONE, 0.15)
 
 	var heart := MeshInstance3D.new()
 	var heart_mesh := SphereMesh.new()
@@ -180,6 +190,7 @@ func _process_chase(delta: float) -> void:
 	_chase_timer += delta
 	var dist := _distance_to_player()
 	if _chase_timer >= give_up_time or dist > chase_radius * 1.5:
+		_calm_timer = CALM_TIME
 		_enter_idle()
 		return
 	nav_agent.target_position = _player.global_position
@@ -213,5 +224,5 @@ func _process_flee(delta: float) -> void:
 	_move_toward_nav_target(flee_speed, delta)
 
 func _check_horn_use() -> void:
-	if _distance_to_player() <= horn_radius and Game.get_count("horn") > 0 and Input.is_action_just_pressed("p1_action"):
+	if _distance_to_player() <= horn_radius and Game.get_count("horn") > 0 and not Game.ui_blocking and Input.is_action_just_pressed("p1_action"):
 		scare(_player.global_position)

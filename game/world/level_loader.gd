@@ -284,6 +284,7 @@ func _spawn_animal(pos: Vector3, animal_data: Dictionary) -> void:
 	mesh.radius = 0.4
 	mesh.height = 1.2
 	var mesh_instance := MeshInstance3D.new()
+	mesh_instance.name = "Mesh"
 	mesh_instance.mesh = mesh
 	mesh_instance.position = Vector3(0, 0.6, 0)
 	var material := StandardMaterial3D.new()
